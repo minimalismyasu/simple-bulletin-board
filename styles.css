@@ -96,7 +96,7 @@ body {
 }
 
 .app-shell {
-  width: min(1280px, calc(100% - 24px));
+  width: min(1120px, calc(100% - 28px));
   margin: 24px auto 40px;
   display: grid;
   gap: 18px;
@@ -653,19 +653,53 @@ select:focus {
 
 @media (max-width: 760px) {
   .app-shell {
-    width: min(100% - 14px, 1280px);
-    margin-top: 14px;
+    width: min(100% - 12px, 100vw);
+    margin: 10px auto 20px;
+    gap: 12px;
   }
 
   .composer,
   .feed,
   .hero,
   .promo {
-    padding: 18px;
+    padding: 16px;
+  }
+
+  .hero {
+    gap: 16px;
+  }
+
+  .lead {
+    font-size: 0.98rem;
+    line-height: 1.75;
+    margin-bottom: 14px;
+  }
+
+  .hero-badges {
+    gap: 8px;
+  }
+
+  .hero-badges span,
+  .chip,
+  .badge {
+    font-size: 0.82rem;
+    padding: 7px 10px;
   }
 
   .hero-panel {
     grid-template-columns: 1fr;
+  }
+
+  .stat {
+    padding: 14px 16px;
+  }
+
+  .promo-grid {
+    gap: 12px;
+  }
+
+  .promo {
+    min-height: 0;
   }
 
   .feed-head,
@@ -675,6 +709,7 @@ select:focus {
   .post-footer {
     align-items: flex-start;
     flex-direction: column;
+    gap: 10px;
   }
 
   .feed-controls {
@@ -687,7 +722,46 @@ select:focus {
     min-width: 0;
   }
 
+  .primary-button,
+  .ghost-button,
+  .utility-button {
+    min-height: 44px;
+  }
+
+  .button-row {
+    width: 100%;
+  }
+
+  .button-row > * {
+    flex: 1 1 0;
+  }
+
   .utility-grid {
     grid-template-columns: 1fr;
+  }
+
+  .utility-file span {
+    min-height: 44px;
+  }
+
+  .post {
+    padding: 16px;
+  }
+
+  .post-controls {
+    width: 100%;
+  }
+
+  .icon-button {
+    min-height: 40px;
+  }
+
+  .like-btn {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .reply-form {
+    gap: 8px;
   }
 }
