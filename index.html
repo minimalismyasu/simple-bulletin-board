@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Circuit Board</title>
+    <title>サーキット掲示板</title>
     <meta
       name="description"
-      content="A cyberpunk bulletin board for event and community operators with monetization hooks."
+      content="イベント運営やコミュニティ運営向けの、収益化にもつながるサイバーパンク掲示板です。"
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
@@ -15,31 +15,31 @@
     <main class="app-shell">
       <header class="hero card">
         <div>
-          <p class="eyebrow">Community OS / Monetize Ready</p>
-          <h1>Circuit Board</h1>
+          <p class="eyebrow">コミュニティ運営基盤 / 収益化対応</p>
+          <h1>サーキット掲示板</h1>
           <p class="lead">
-            A polished public board for events and small communities. Members can post, reply,
-            and like. Operators can pitch Pro upgrades, branding, analytics, and moderation.
+            イベントや小規模コミュニティに向けた、見やすく運営しやすい掲示板です。
+            投稿、返信、いいね、固定に対応し、プロ機能への導線も置いてあります。
           </p>
           <div class="hero-badges">
-            <span>Free board</span>
-            <span>Pro upgrades</span>
-            <span>Draft saving</span>
-            <span>Fast search</span>
+            <span>無料公開板</span>
+            <span>プロ導線つき</span>
+            <span>下書き保存</span>
+            <span>高速検索</span>
           </div>
         </div>
 
         <div class="hero-panel">
           <div class="stat">
-            <span class="stat-label">Posts</span>
+            <span class="stat-label">投稿数</span>
             <strong id="post-count">0</strong>
           </div>
           <div class="stat">
-            <span class="stat-label">Pinned</span>
+            <span class="stat-label">固定中</span>
             <strong id="pinned-count">0</strong>
           </div>
           <div class="stat">
-            <span class="stat-label">Latest update</span>
+            <span class="stat-label">最終更新</span>
             <strong id="latest-updated">-</strong>
           </div>
         </div>
@@ -47,29 +47,26 @@
 
       <section class="promo-grid">
         <article class="card promo promo-free">
-          <p class="eyebrow">Free plan</p>
-          <h2>Public board for acquisition</h2>
+          <p class="eyebrow">無料版</p>
+          <h2>集客用の公開掲示板</h2>
           <p>
-            Search, pin, sort, and reply features are free so the board can be used as a
-            lightweight public-facing community space.
+            検索、固定、並び替え、返信を無料で使えるようにして、まずは参加者を集めます。
           </p>
         </article>
 
         <article class="card promo promo-pro">
-          <p class="eyebrow">Pro plan</p>
-          <h2>Revenue-ready operator layer</h2>
+          <p class="eyebrow">プロ版</p>
+          <h2>運営者向けの収益化層</h2>
           <p>
-            Branding, moderation queue, analytics, backup history, and notification tools are
-            positioned as paid upgrades.
+            ブランディング、モデレーション、分析、バックアップ、通知を有料機能として見せます。
           </p>
         </article>
 
         <article class="card promo promo-audience">
-          <p class="eyebrow">Best for</p>
-          <h2>Events and niche communities</h2>
+          <p class="eyebrow">向いている用途</p>
+          <h2>イベントと小さなコミュニティ</h2>
           <p>
-            Best for meetups, clubs, fan groups, small stores, and temporary event communities
-            where a focused board is more valuable than a broad social network.
+            交流会、ファングループ、サークル、店舗コミュニティ、期間限定イベントに向いています。
           </p>
         </article>
       </section>
@@ -78,39 +75,39 @@
         <aside class="card composer">
           <div class="section-head">
             <div>
-              <p class="eyebrow">Compose</p>
-              <h2>New thread</h2>
+              <p class="eyebrow">投稿</p>
+              <h2>新規スレッド</h2>
             </div>
-            <button id="theme-toggle" class="ghost-button" type="button">Theme</button>
+            <button id="theme-toggle" class="ghost-button" type="button">テーマ</button>
           </div>
 
           <form id="post-form" class="form">
             <label>
-              <span>Thread title</span>
+              <span>件名</span>
               <input
                 id="title"
                 name="title"
                 type="text"
                 maxlength="60"
-                placeholder="Example: Event check-in for Aug 12"
+                placeholder="例: 8/12 イベント参加確認"
                 required
               />
             </label>
 
             <label>
-              <span>Name</span>
+              <span>名前</span>
               <input
                 id="name"
                 name="name"
                 type="text"
                 maxlength="30"
-                placeholder="Taro"
+                placeholder="たろう"
                 autocomplete="nickname"
               />
             </label>
 
             <label>
-              <span>Handle</span>
+              <span>ハンドル</span>
               <input
                 id="handle"
                 name="handle"
@@ -122,24 +119,24 @@
             </label>
 
             <label>
-              <span>Category</span>
+              <span>カテゴリ</span>
               <select id="category" name="category">
-                <option value="general">GENERAL</option>
-                <option value="event">EVENT</option>
-                <option value="support">SUPPORT</option>
-                <option value="idea">IDEA</option>
-                <option value="alert">ALERT</option>
+                <option value="general">一般</option>
+                <option value="event">イベント</option>
+                <option value="support">サポート</option>
+                <option value="idea">アイデア</option>
+                <option value="alert">注意</option>
               </select>
             </label>
 
             <label>
-              <span>Message</span>
+              <span>本文</span>
               <textarea
                 id="message"
                 name="message"
                 rows="7"
                 maxlength="400"
-                placeholder="Write a question, announcement, or update."
+                placeholder="質問、告知、更新内容を書いて投稿してください。"
                 required
               ></textarea>
             </label>
@@ -147,29 +144,29 @@
             <div class="composer-actions">
               <p id="status" class="status" aria-live="polite"></p>
               <div class="button-row">
-                <button type="button" id="clear-form" class="ghost-button">Clear</button>
-                <button type="submit" class="primary-button" id="submit-button">Post</button>
+                <button type="button" id="clear-form" class="ghost-button">クリア</button>
+                <button type="submit" class="primary-button" id="submit-button">投稿</button>
               </div>
             </div>
           </form>
 
           <div class="utility-grid">
-            <button id="export-json" class="utility-button" type="button">Backup JSON</button>
+            <button id="export-json" class="utility-button" type="button">バックアップ保存</button>
             <label class="utility-file">
               <input id="import-json" type="file" accept="application/json" />
-              <span>Import JSON</span>
+              <span>バックアップ読込</span>
             </label>
-            <button id="seed-reset" class="utility-button danger" type="button">Reset</button>
-            <button id="pro-cta" class="utility-button accent" type="button">Start Pro</button>
+            <button id="seed-reset" class="utility-button danger" type="button">初期化</button>
+            <button id="pro-cta" class="utility-button accent" type="button">プロ開始</button>
           </div>
 
           <div class="pro-box">
-            <p class="eyebrow">Pro features</p>
+            <p class="eyebrow">プロ機能</p>
             <ul>
-              <li>Custom branding and logo</li>
-              <li>Extra categories and moderation tools</li>
-              <li>Email or Discord notifications</li>
-              <li>Search analytics and backup history</li>
+              <li>ロゴや配色のカスタム</li>
+              <li>カテゴリ追加とモデレーション</li>
+              <li>メールやチャット通知</li>
+              <li>検索分析とバックアップ履歴</li>
             </ul>
           </div>
         </aside>
@@ -177,42 +174,42 @@
         <section class="card feed">
           <div class="section-head feed-head">
             <div>
-              <p class="eyebrow">Feed</p>
-              <h2>Timeline</h2>
+              <p class="eyebrow">一覧</p>
+              <h2>タイムライン</h2>
             </div>
 
             <div class="feed-controls">
               <label class="inline-field">
-                <span>Search</span>
-                <input id="search" type="search" placeholder="name, body, category" />
+                <span>検索</span>
+                <input id="search" type="search" placeholder="名前、本文、カテゴリ" />
               </label>
 
               <label class="inline-field">
-                <span>Sort</span>
+                <span>並び替え</span>
                 <select id="sort">
-                  <option value="newest">Newest</option>
-                  <option value="oldest">Oldest</option>
-                  <option value="updated">Updated</option>
+                  <option value="newest">新しい順</option>
+                  <option value="oldest">古い順</option>
+                  <option value="updated">更新順</option>
                 </select>
               </label>
 
               <label class="inline-field">
-                <span>Filter</span>
+                <span>絞り込み</span>
                 <select id="filter-category">
-                  <option value="all">All</option>
-                  <option value="general">GENERAL</option>
-                  <option value="event">EVENT</option>
-                  <option value="support">SUPPORT</option>
-                  <option value="idea">IDEA</option>
-                  <option value="alert">ALERT</option>
+                  <option value="all">すべて</option>
+                  <option value="general">一般</option>
+                  <option value="event">イベント</option>
+                  <option value="support">サポート</option>
+                  <option value="idea">アイデア</option>
+                  <option value="alert">注意</option>
                 </select>
               </label>
             </div>
           </div>
 
           <div class="toolbar">
-            <span id="result-count" class="chip">0 items</span>
-            <span class="hint">Pin, like, edit, delete, and reply on each thread.</span>
+            <span id="result-count" class="chip">0件</span>
+            <span class="hint">各スレッドで固定、いいね、編集、削除、返信ができます。</span>
           </div>
 
           <div id="posts" class="posts" aria-live="polite"></div>
@@ -231,12 +228,12 @@
             </div>
           </div>
           <div class="post-controls">
-            <button type="button" class="icon-button pin-btn" aria-label="Pin">PIN</button>
-            <button type="button" class="icon-button like-btn" aria-label="Like">
-              LIKE <span class="like-count">0</span>
+            <button type="button" class="icon-button pin-btn" aria-label="固定">固定</button>
+            <button type="button" class="icon-button like-btn" aria-label="いいね">
+              いいね <span class="like-count">0</span>
             </button>
-            <button type="button" class="icon-button edit-btn" aria-label="Edit">EDIT</button>
-            <button type="button" class="icon-button delete-btn" aria-label="Delete">DEL</button>
+            <button type="button" class="icon-button edit-btn" aria-label="編集">編集</button>
+            <button type="button" class="icon-button delete-btn" aria-label="削除">削除</button>
           </div>
         </div>
 
@@ -248,7 +245,7 @@
           <span class="post-updated"></span>
         </div>
 
-        <button type="button" class="ghost-button reply-toggle">Replies</button>
+        <button type="button" class="ghost-button reply-toggle">返信</button>
 
         <div class="reply-panel hidden">
           <div class="reply-list"></div>
@@ -257,7 +254,7 @@
               type="text"
               name="reply-name"
               class="reply-name"
-              placeholder="Reply name"
+              placeholder="返信者名"
               maxlength="30"
             />
             <textarea
@@ -265,10 +262,10 @@
               class="reply-message"
               rows="3"
               maxlength="240"
-              placeholder="Write a reply..."
+              placeholder="返信内容を入力"
               required
             ></textarea>
-            <button type="submit" class="primary-button">Send reply</button>
+            <button type="submit" class="primary-button">返信する</button>
           </form>
           <span class="reply-count chip"></span>
         </div>

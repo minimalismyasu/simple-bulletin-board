@@ -1,22 +1,21 @@
-# Circuit Board
+# サーキット掲示板
 
-A cyberpunk-style community bulletin board built for event organizers and small communities.
+イベント運営やコミュニティ運営向けの、サイバーパンク調の掲示板です。
 
-## What it includes
+## できること
 
-- Free public board layout
-- Monetization-oriented Pro pitch
-- Thread titles, likes, pins, and replies
-- Search, sort, and category filtering
-- Draft saving in `localStorage`
-- JSON backup and import
+- 投稿、返信、いいね、固定
+- 検索、並び替え、カテゴリ絞り込み
+- 下書き保存
+- バックアップの保存と読み込み
+- 無料公開板とプロ機能の導線表示
 
-## Files
+## ファイル
 
 - `index.html`
 - `styles.css`
 - `app.js`
 
-## Use case
+## 用途
 
-This version is aimed at communities that can pay for branding, moderation, analytics, or backup features.
+小規模イベント、ファンコミュニティ、サークル、店舗コミュニティなどに向いています。

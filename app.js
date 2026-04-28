@@ -3,22 +3,22 @@ const SETTINGS_KEY = "circuit-board-settings-v1";
 const DRAFT_KEY = "circuit-board-draft-v1";
 
 const CATEGORY_META = {
-  general: { label: "GENERAL", color: "#24f0ff" },
-  event: { label: "EVENT", color: "#ffba4d" },
-  support: { label: "SUPPORT", color: "#a9ff4b" },
-  idea: { label: "IDEA", color: "#ff4ad8" },
-  alert: { label: "ALERT", color: "#ff5e84" },
+  general: { label: "一般", color: "#24f0ff" },
+  event: { label: "イベント", color: "#ffba4d" },
+  support: { label: "サポート", color: "#a9ff4b" },
+  idea: { label: "アイデア", color: "#ff4ad8" },
+  alert: { label: "注意", color: "#ff5e84" },
 };
 
 const seedPosts = [
   {
     id: crypto.randomUUID(),
-    title: "Welcome to the board",
-    name: "Operator",
-    handle: "@core",
+    title: "掲示板へようこそ",
+    name: "運営",
+        handle: "@運営",
     category: "general",
     message:
-      "This board is designed for event communities that want a clean public space plus monetization hooks.",
+      "この掲示板は、見やすい公開スペースと収益化の導線を両立させるために作っています。",
     createdAt: Date.now() - 1000 * 60 * 68,
     updatedAt: Date.now() - 1000 * 60 * 68,
     pinned: true,
@@ -26,20 +26,20 @@ const seedPosts = [
     replies: [
       {
         id: crypto.randomUUID(),
-        name: "Moderator",
-        handle: "@team",
-        message: "Pinned for onboarding and first-time visitors.",
+        name: "モデレーター",
+        handle: "@運営",
+        message: "初めての人向けに固定しています。",
         createdAt: Date.now() - 1000 * 60 * 54,
       },
     ],
   },
   {
     id: crypto.randomUUID(),
-    title: "Event check-in",
-    name: "Switch",
-    handle: "@helpdesk",
+    title: "イベント受付",
+    name: "案内",
+        handle: "@案内",
     category: "event",
-    message: "Use this thread for attendance, venue info, and schedule updates.",
+    message: "出欠確認、会場案内、当日の更新はこのスレッドでお願いします。",
     createdAt: Date.now() - 1000 * 60 * 34,
     updatedAt: Date.now() - 1000 * 60 * 34,
     pinned: false,
@@ -47,20 +47,20 @@ const seedPosts = [
     replies: [
       {
         id: crypto.randomUUID(),
-        name: "Nova",
-        handle: "@attendee",
-        message: "Thanks. I can see the schedule more easily now.",
+        name: "参加者",
+        handle: "@参加者",
+        message: "これで予定が見やすくなりました。",
         createdAt: Date.now() - 1000 * 60 * 19,
       },
     ],
   },
   {
     id: crypto.randomUUID(),
-    title: "Feature idea",
-    name: "Nova",
-    handle: "@idea",
+    title: "機能案",
+    name: "参加者",
+        handle: "@アイデア",
     category: "idea",
-    message: "A Pro tier could add custom branding, moderation queue, and backup history.",
+    message: "プロ版でロゴ変更、モデレーション、バックアップ履歴があると便利です。",
     createdAt: Date.now() - 1000 * 60 * 11,
     updatedAt: Date.now() - 1000 * 60 * 11,
     pinned: false,
@@ -114,7 +114,7 @@ elements.form.addEventListener("submit", (event) => {
 
   const payload = collectDraft();
   if (!payload.title || !payload.message) {
-    setStatus("Please enter both a title and a message.");
+    setStatus("件名と本文の両方を入力してください。");
     return;
   }
 
@@ -129,8 +129,8 @@ elements.form.addEventListener("submit", (event) => {
         : post,
     );
     editingId = null;
-    elements.submitButton.textContent = "Post";
-    setStatus("Post updated.");
+    elements.submitButton.textContent = "投稿";
+    setStatus("投稿を更新しました。");
   } else {
     posts.unshift({
       id: crypto.randomUUID(),
@@ -141,7 +141,7 @@ elements.form.addEventListener("submit", (event) => {
       likes: 0,
       replies: [],
     });
-    setStatus("Posted.");
+    setStatus("投稿しました。");
   }
 
   savePosts();
@@ -155,9 +155,9 @@ elements.form.addEventListener("change", saveDraft);
 
 elements.clearForm.addEventListener("click", () => {
   editingId = null;
-  elements.submitButton.textContent = "Post";
+  elements.submitButton.textContent = "投稿";
   clearDraft({ resetCategory: true });
-  setStatus("Draft cleared.");
+  setStatus("下書きを消去しました。");
 });
 
 elements.themeToggle.addEventListener("click", () => {
@@ -165,7 +165,7 @@ elements.themeToggle.addEventListener("click", () => {
   applyTheme(nextTheme);
   settings.theme = nextTheme;
   saveSettings();
-  setStatus(`Theme switched to ${nextTheme.toUpperCase()}.`);
+    setStatus(`テーマを${nextTheme === "day" ? "昼" : "夜"}に切り替えました。`);
 });
 
 elements.exportJson.addEventListener("click", () => {
@@ -180,7 +180,7 @@ elements.exportJson.addEventListener("click", () => {
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
-  setStatus("Backup exported.");
+  setStatus("バックアップを保存しました。");
 });
 
 elements.importJson.addEventListener("change", async () => {
@@ -192,21 +192,21 @@ elements.importJson.addEventListener("change", async () => {
     const parsed = JSON.parse(text);
     const nextPosts = normalizeImportedPosts(parsed);
     if (!nextPosts.length) {
-      throw new Error("No usable posts found.");
+      throw new Error("使える投稿データが見つかりませんでした。");
     }
     posts = nextPosts;
     savePosts();
     render();
-    setStatus("Backup imported.");
+    setStatus("バックアップを読み込みました。");
   } catch (error) {
-    setStatus(error instanceof Error ? error.message : "Import failed.");
+    setStatus(error instanceof Error ? error.message : "読み込みに失敗しました。");
   } finally {
     elements.importJson.value = "";
   }
 });
 
 elements.seedReset.addEventListener("click", () => {
-  const confirmed = window.confirm("Reset to the built-in example posts?");
+  const confirmed = window.confirm("初期サンプルに戻します。よろしいですか？");
   if (!confirmed) return;
 
   posts = seedPosts.map((post) => ({
@@ -217,16 +217,16 @@ elements.seedReset.addEventListener("click", () => {
   editingId = null;
   openReplies.clear();
   replyDrafts.clear();
-  elements.submitButton.textContent = "Post";
+  elements.submitButton.textContent = "投稿";
   savePosts();
   clearDraft({ resetCategory: true });
   render();
-  setStatus("Reset complete.");
+  setStatus("初期化しました。");
 });
 
 elements.proCta.addEventListener("click", () => {
   window.alert(
-    "Pro plan pitch:\n\n- Custom branding\n- Extra categories\n- Moderation queue\n- Backup history\n- Analytics",
+    "プロ版の訴求:\n\n・ロゴや配色の変更\n・カテゴリ追加\n・モデレーションキュー\n・バックアップ履歴\n・分析機能",
   );
 });
 
@@ -263,7 +263,7 @@ elements.posts.addEventListener("click", (event) => {
     );
     savePosts();
     render();
-    setStatus("Pin toggled.");
+    setStatus("固定状態を切り替えました。");
     return;
   }
 
@@ -287,27 +287,27 @@ elements.posts.addEventListener("click", (event) => {
     elements.handle.value = post.handle || "";
     elements.category.value = post.category || "general";
     elements.message.value = post.message || "";
-    elements.submitButton.textContent = "Update";
-    setStatus("Editing post.");
+    elements.submitButton.textContent = "更新";
+    setStatus("編集中です。");
     elements.form.scrollIntoView({ behavior: "smooth", block: "start" });
     elements.title.focus();
     return;
   }
 
   if (button.classList.contains("delete-btn")) {
-    const confirmed = window.confirm("Delete this post?");
+    const confirmed = window.confirm("この投稿を削除しますか？");
     if (!confirmed) return;
     posts = posts.filter((post) => post.id !== postId);
     if (editingId === postId) {
       editingId = null;
-      elements.submitButton.textContent = "Post";
+      elements.submitButton.textContent = "投稿";
       clearDraft({ resetCategory: false });
     }
     openReplies.delete(postId);
     replyDrafts.delete(postId);
     savePosts();
     render();
-    setStatus("Post deleted.");
+    setStatus("投稿を削除しました。");
     return;
   }
 
@@ -317,10 +317,10 @@ elements.posts.addEventListener("click", (event) => {
     panel.classList.toggle("hidden");
     if (isOpen) {
       openReplies.delete(postId);
-      button.textContent = "Replies";
+      button.textContent = "返信";
     } else {
       openReplies.add(postId);
-      button.textContent = "Hide replies";
+      button.textContent = "返信を閉じる";
     }
   }
 });
@@ -333,7 +333,7 @@ elements.posts.addEventListener("submit", (event) => {
   const postId = form.dataset.postId;
   const nameInput = form.querySelector("[name='reply-name']");
   const messageInput = form.querySelector("[name='reply-message']");
-  const name = (nameInput?.value || "").trim() || "Guest";
+  const name = (nameInput?.value || "").trim() || "ゲスト";
   const message = (messageInput?.value || "").trim();
   if (!message) return;
 
@@ -359,7 +359,7 @@ elements.posts.addEventListener("submit", (event) => {
   savePosts();
   replyDrafts.delete(postId);
   render();
-  setStatus("Reply posted.");
+  setStatus("返信を投稿しました。");
 });
 
 elements.posts.addEventListener("input", (event) => {
@@ -442,7 +442,7 @@ function saveDraft() {
   try {
     localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraft()));
   } catch {
-    setStatus("Draft could not be saved. Storage may be full or blocked.");
+    setStatus("下書きを保存できませんでした。ストレージが制限されている可能性があります。");
   }
 }
 
@@ -459,7 +459,7 @@ function clearDraft({ resetCategory = false } = {}) {
 
 function collectDraft() {
   const title = elements.title.value.trim().slice(0, 60);
-  const name = elements.name.value.trim().slice(0, 30) || "Guest";
+  const name = elements.name.value.trim().slice(0, 30) || "ゲスト";
   const handle = normalizeHandle(elements.handle.value);
   const category = Object.keys(CATEGORY_META).includes(elements.category.value)
     ? elements.category.value
@@ -481,8 +481,8 @@ function normalizeImportedPosts(input) {
     .filter(Boolean)
     .map((post) => ({
       ...post,
-      title: post.title || "Untitled",
-      name: post.name || "Guest",
+      title: post.title || "件名なし",
+      name: post.name || "ゲスト",
       handle: post.handle || "",
       category: Object.keys(CATEGORY_META).includes(post.category) ? post.category : "general",
       message: String(post.message || "").trim(),
@@ -493,7 +493,7 @@ function normalizeImportedPosts(input) {
       replies: Array.isArray(post.replies)
         ? post.replies.map((reply) => ({
             id: typeof reply.id === "string" ? reply.id : crypto.randomUUID(),
-            name: typeof reply.name === "string" ? reply.name : "Guest",
+            name: typeof reply.name === "string" ? reply.name : "ゲスト",
             handle: typeof reply.handle === "string" ? reply.handle : "",
             message: String(reply.message || "").trim(),
             createdAt: Number(reply.createdAt) || Date.now(),
@@ -512,8 +512,8 @@ function normalizeImportedPost(post) {
 
   return {
     id: typeof post.id === "string" ? post.id : crypto.randomUUID(),
-    title: typeof post.title === "string" ? post.title : "Untitled",
-    name: typeof post.name === "string" ? post.name : "Guest",
+    title: typeof post.title === "string" ? post.title : "件名なし",
+    name: typeof post.name === "string" ? post.name : "ゲスト",
     handle: typeof post.handle === "string" ? post.handle : "",
     category: Object.keys(CATEGORY_META).includes(category) ? category : "general",
     message: String(post.message ?? post.content ?? "").trim(),
@@ -524,7 +524,7 @@ function normalizeImportedPost(post) {
     replies: Array.isArray(post.replies)
       ? post.replies.map((reply) => ({
           id: typeof reply.id === "string" ? reply.id : crypto.randomUUID(),
-          name: typeof reply.name === "string" ? reply.name : "Guest",
+          name: typeof reply.name === "string" ? reply.name : "ゲスト",
           handle: typeof reply.handle === "string" ? reply.handle : "",
           message: String(reply.message || "").trim(),
           createdAt: Number(reply.createdAt) || Date.now(),
@@ -537,7 +537,7 @@ function savePosts() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
   } catch {
-    setStatus("Posts could not be saved. Storage may be full or blocked.");
+    setStatus("投稿を保存できませんでした。ストレージが制限されている可能性があります。");
   }
 }
 
@@ -545,7 +545,7 @@ function saveSettings() {
   try {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
   } catch {
-    setStatus("Settings could not be saved. Storage may be full or blocked.");
+    setStatus("設定を保存できませんでした。ストレージが制限されている可能性があります。");
   }
 }
 
@@ -585,7 +585,7 @@ function render() {
   elements.posts.innerHTML = "";
   elements.postCount.textContent = String(posts.length);
   elements.pinnedCount.textContent = String(posts.filter((post) => post.pinned).length);
-  elements.resultCount.textContent = `${visiblePosts.length} items`;
+  elements.resultCount.textContent = `${visiblePosts.length}件`;
   elements.latestUpdated.textContent = formatStamp(
     posts.length ? Math.max(...posts.map((post) => post.updatedAt || post.createdAt)) : null,
   );
@@ -594,8 +594,8 @@ function render() {
     const empty = document.createElement("p");
     empty.className = "empty-state";
     empty.textContent = posts.length
-      ? "No posts match the current search or category."
-      : "No posts yet. Create the first thread from the composer.";
+      ? "検索条件に一致する投稿がありません。"
+      : "まだ投稿がありません。左のフォームから最初のスレッドを作成してください。";
     elements.posts.appendChild(empty);
     return;
   }
@@ -628,22 +628,22 @@ function render() {
     badge.textContent = meta.label;
     badge.style.background = meta.color;
 
-    name.textContent = post.name || "Guest";
-    handle.textContent = post.handle || "@anon";
-    title.textContent = post.title || "Untitled";
+    name.textContent = post.name || "ゲスト";
+    handle.textContent = post.handle || "@匿名";
+    title.textContent = post.title || "件名なし";
     message.textContent = post.message;
-    time.textContent = `Posted ${formatStamp(post.createdAt)}`;
+    time.textContent = `投稿 ${formatStamp(post.createdAt)}`;
     updated.textContent =
       post.updatedAt && post.updatedAt !== post.createdAt
-        ? `Updated ${formatStamp(post.updatedAt)}`
-        : "No updates";
+        ? `更新 ${formatStamp(post.updatedAt)}`
+        : "更新なし";
 
-    pinBtn.textContent = post.pinned ? "PINNED" : "PIN";
-    pinBtn.setAttribute("aria-label", post.pinned ? "Unpin" : "Pin");
+    pinBtn.textContent = post.pinned ? "固定中" : "固定";
+    pinBtn.setAttribute("aria-label", post.pinned ? "固定解除" : "固定");
 
     likeCount.textContent = String(post.likes || 0);
-    likeBtn.title = "Like";
-    replyCount.textContent = `${(post.replies || []).length} replies`;
+    likeBtn.title = "いいね";
+    replyCount.textContent = `${(post.replies || []).length}件の返信`;
 
     if (post.replies && post.replies.length) {
       replyList.innerHTML = "";
@@ -652,7 +652,7 @@ function render() {
         item.className = "reply-item";
         item.innerHTML = `
           <div class="reply-meta">
-            <strong>${escapeHtml(reply.name || "Guest")}</strong>
+            <strong>${escapeHtml(reply.name || "ゲスト")}</strong>
             <span>${formatStamp(reply.createdAt)}</span>
           </div>
           <p class="reply-body">${escapeHtml(reply.message)}</p>
@@ -660,12 +660,12 @@ function render() {
         replyList.appendChild(item);
       }
     } else {
-      replyList.innerHTML = '<p class="empty-state">No replies yet.</p>';
+      replyList.innerHTML = '<p class="empty-state">まだ返信はありません。</p>';
     }
 
     const isOpen = openReplies.has(post.id);
     replyPanel.classList.toggle("hidden", !isOpen);
-    replyToggle.textContent = isOpen ? "Hide replies" : "Replies";
+    replyToggle.textContent = isOpen ? "返信を閉じる" : "返信";
     replyForm.dataset.postId = post.id;
     const draft = replyDrafts.get(post.id);
     replyName.value = draft?.name || "";
