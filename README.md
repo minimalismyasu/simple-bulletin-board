@@ -1,25 +1,22 @@
-# かんたん掲示板
+# Neon Board
 
-ブラウザだけで動く、最小構成の掲示板です。
+A cyberpunk-style bulletin board that runs entirely in the browser.
 
-## できること
+## Features
 
-- 名前とメッセージを投稿できる
-- 投稿はブラウザの `localStorage` に保存される
-- サーバー不要でそのまま開ける
+- Neon-themed UI with day/night toggle
+- Create, edit, delete, and pin posts
+- Search, category filter, and sort options
+- Local persistence with `localStorage`
+- JSON export and import for backup
+- Seed reset for a quick clean slate
 
-## 使い方
-
-1. `index.html` をブラウザで開く
-2. 名前とメッセージを入力して投稿する
-3. 同じブラウザなら投稿が残る
-
-## GitHub Pages に置くとき
-
-このリポジトリを GitHub にアップして、GitHub Pages を有効にすると、誰でもアクセスできる公開ページになります。
-
-## ファイル
+## Files
 
 - `index.html`
 - `styles.css`
 - `app.js`
+
+## Notes
+
+This is a static front-end app, so it can be hosted on GitHub Pages as-is.
