@@ -1,40 +1,40 @@
 :root {
   color-scheme: dark;
-  --bg-0: #050816;
-  --bg-1: #0a1024;
-  --bg-2: #111a34;
-  --panel: rgba(13, 19, 39, 0.84);
-  --panel-strong: rgba(15, 24, 49, 0.95);
-  --border: rgba(99, 240, 255, 0.16);
-  --text: #e9f8ff;
-  --muted: #88a1bc;
-  --cyan: #24f0ff;
-  --cyan-2: #06a0ff;
-  --magenta: #ff4ad8;
-  --lime: #a9ff4b;
-  --amber: #ffba4d;
-  --danger: #ff5e84;
-  --shadow: 0 28px 80px rgba(0, 0, 0, 0.48);
-  --radius: 24px;
+  --bg-0: #070b14;
+  --bg-1: #0c1220;
+  --bg-2: #11192a;
+  --panel: rgba(14, 20, 32, 0.94);
+  --panel-strong: rgba(18, 26, 40, 0.98);
+  --border: rgba(138, 173, 214, 0.18);
+  --text: #f4f8fc;
+  --muted: #a2afc2;
+  --cyan: #67dff7;
+  --cyan-2: #5db0ff;
+  --magenta: #ff73d2;
+  --lime: #bbe86a;
+  --amber: #f0c05e;
+  --danger: #ff7a96;
+  --shadow: 0 18px 44px rgba(0, 0, 0, 0.34);
+  --radius: 22px;
 }
 
 [data-theme="day"] {
   color-scheme: light;
-  --bg-0: #eaf4ff;
-  --bg-1: #d7eaff;
-  --bg-2: #f6f9ff;
-  --panel: rgba(255, 255, 255, 0.74);
-  --panel-strong: rgba(255, 255, 255, 0.92);
-  --border: rgba(44, 90, 156, 0.14);
-  --text: #0f2036;
-  --muted: #56677f;
-  --cyan: #0c83ff;
-  --cyan-2: #0056d6;
-  --magenta: #cb2ea5;
-  --lime: #398c1c;
-  --amber: #a86a00;
-  --danger: #cf345f;
-  --shadow: 0 24px 64px rgba(41, 72, 116, 0.16);
+  --bg-0: #edf3fa;
+  --bg-1: #dde8f4;
+  --bg-2: #f8fbff;
+  --panel: rgba(255, 255, 255, 0.94);
+  --panel-strong: rgba(255, 255, 255, 0.98);
+  --border: rgba(53, 84, 124, 0.12);
+  --text: #112033;
+  --muted: #5d6d82;
+  --cyan: #0d7ff0;
+  --cyan-2: #0058d1;
+  --magenta: #c83d9e;
+  --lime: #4d8f2e;
+  --amber: #a46b00;
+  --danger: #cd4661;
+  --shadow: 0 16px 34px rgba(39, 66, 104, 0.12);
 }
 
 * {
@@ -49,11 +49,13 @@ body {
 
 body {
   font-family: "Segoe UI Variable", "Yu Gothic UI", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
   color: var(--text);
   background:
-    radial-gradient(circle at 14% 12%, rgba(255, 74, 216, 0.2), transparent 26%),
-    radial-gradient(circle at 86% 14%, rgba(36, 240, 255, 0.2), transparent 24%),
-    radial-gradient(circle at 65% 82%, rgba(169, 255, 75, 0.08), transparent 28%),
+    radial-gradient(circle at 16% 12%, rgba(103, 223, 247, 0.08), transparent 24%),
+    radial-gradient(circle at 84% 18%, rgba(255, 115, 210, 0.08), transparent 22%),
+    radial-gradient(circle at 62% 82%, rgba(187, 232, 106, 0.04), transparent 28%),
     linear-gradient(135deg, var(--bg-0), var(--bg-1) 42%, var(--bg-2));
   overflow-x: hidden;
 }
@@ -63,11 +65,11 @@ body {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-  background-size: 36px 36px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.72), transparent 94%);
-  opacity: 0.5;
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.6), transparent 96%);
+  opacity: 0.22;
 }
 
 .backdrop::before,
@@ -80,23 +82,23 @@ body {
 }
 
 .backdrop::before {
-  width: 340px;
-  height: 340px;
-  left: -100px;
-  top: 8%;
-  background: rgba(255, 74, 216, 0.2);
+  width: 300px;
+  height: 300px;
+  left: -120px;
+  top: 10%;
+  background: rgba(103, 223, 247, 0.08);
 }
 
 .backdrop::after {
-  width: 420px;
-  height: 420px;
-  right: -120px;
-  bottom: -120px;
-  background: rgba(36, 240, 255, 0.16);
+  width: 360px;
+  height: 360px;
+  right: -140px;
+  bottom: -140px;
+  background: rgba(255, 115, 210, 0.08);
 }
 
 .app-shell {
-  width: min(1120px, calc(100% - 28px));
+  width: min(1040px, calc(100% - 28px));
   margin: 24px auto 40px;
   display: grid;
   gap: 18px;
@@ -107,11 +109,11 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(10px);
 }
 
 .hero {
-  padding: 28px;
+  padding: 24px;
   display: grid;
   grid-template-columns: 1.6fr 1fr;
   gap: 24px;
@@ -125,15 +127,14 @@ body {
   inset: auto -36px -64px auto;
   width: 240px;
   height: 240px;
-  background: radial-gradient(circle, rgba(36, 240, 255, 0.24), transparent 72%);
+  background: radial-gradient(circle, rgba(103, 223, 247, 0.12), transparent 72%);
 }
 
 .eyebrow {
   margin: 0 0 8px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  letter-spacing: 0.08em;
   color: var(--cyan);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 800;
 }
 
@@ -146,15 +147,15 @@ p {
 
 h1 {
   margin-bottom: 12px;
-  font-size: clamp(2.6rem, 6vw, 5rem);
-  line-height: 0.94;
-  text-shadow: 0 0 18px rgba(36, 240, 255, 0.18);
+  font-size: clamp(2.3rem, 5vw, 4.4rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
 }
 
 .lead {
   max-width: 66ch;
   color: var(--muted);
-  line-height: 1.8;
+  line-height: 1.78;
   margin-bottom: 18px;
 }
 
@@ -174,6 +175,7 @@ h1 {
   border-radius: 999px;
   border: 1px solid var(--border);
   font-size: 0.88rem;
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .hero-panel {
@@ -208,8 +210,8 @@ h1 {
 }
 
 .promo {
-  padding: 22px;
-  min-height: 170px;
+  padding: 20px;
+  min-height: 160px;
 }
 
 .promo h2 {
@@ -223,15 +225,15 @@ h1 {
 }
 
 .promo-free {
-  border-color: rgba(36, 240, 255, 0.22);
+  border-color: rgba(103, 223, 247, 0.2);
 }
 
 .promo-pro {
-  border-color: rgba(255, 74, 216, 0.24);
+  border-color: rgba(255, 115, 210, 0.2);
 }
 
 .promo-audience {
-  border-color: rgba(169, 255, 75, 0.18);
+  border-color: rgba(187, 232, 106, 0.18);
 }
 
 .workspace {
@@ -284,7 +286,7 @@ select {
   width: 100%;
   border: 1px solid var(--border);
   border-radius: 16px;
-  background: rgba(8, 12, 24, 0.58);
+  background: rgba(255, 255, 255, 0.04);
   color: var(--text);
   padding: 13px 14px;
   font: inherit;
@@ -297,7 +299,7 @@ select {
 [data-theme="day"] input,
 [data-theme="day"] textarea,
 [data-theme="day"] select {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.96);
 }
 
 textarea {
@@ -309,10 +311,10 @@ input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: rgba(36, 240, 255, 0.8);
+  border-color: rgba(103, 223, 247, 0.88);
   box-shadow:
-    0 0 0 3px rgba(36, 240, 255, 0.16),
-    0 0 18px rgba(36, 240, 255, 0.1);
+    0 0 0 3px rgba(103, 223, 247, 0.14),
+    0 0 14px rgba(103, 223, 247, 0.08);
 }
 
 .composer-actions {
@@ -352,21 +354,21 @@ select:focus {
 .primary-button,
 .utility-button {
   padding: 12px 18px;
-  background: linear-gradient(135deg, rgba(36, 240, 255, 0.18), rgba(255, 74, 216, 0.16));
+  background: linear-gradient(135deg, rgba(103, 223, 247, 0.18), rgba(255, 115, 210, 0.14));
 }
 
 .ghost-button {
   padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .utility-button.accent {
-  background: linear-gradient(135deg, rgba(169, 255, 75, 0.18), rgba(36, 240, 255, 0.14));
+  background: linear-gradient(135deg, rgba(187, 232, 106, 0.18), rgba(103, 223, 247, 0.12));
 }
 
 .danger {
-  border-color: rgba(255, 94, 132, 0.32);
-  background: linear-gradient(135deg, rgba(255, 94, 132, 0.18), rgba(255, 186, 77, 0.1));
+  border-color: rgba(255, 122, 150, 0.3);
+  background: linear-gradient(135deg, rgba(255, 122, 150, 0.18), rgba(240, 192, 94, 0.08));
 }
 
 .primary-button:hover,
@@ -374,7 +376,7 @@ select:focus {
 .utility-button:hover,
 .icon-button:hover {
   transform: translateY(-1px);
-  border-color: rgba(36, 240, 255, 0.6);
+  border-color: rgba(103, 223, 247, 0.56);
 }
 
 .utility-grid {
@@ -390,7 +392,7 @@ select:focus {
   min-height: 48px;
   border-radius: 999px;
   border: 1px solid var(--border);
-  background: linear-gradient(135deg, rgba(36, 240, 255, 0.12), rgba(255, 74, 216, 0.09));
+  background: linear-gradient(135deg, rgba(103, 223, 247, 0.1), rgba(255, 115, 210, 0.08));
   cursor: pointer;
   overflow: hidden;
 }
@@ -413,8 +415,8 @@ select:focus {
   margin-top: 16px;
   padding: 16px;
   border-radius: 18px;
-  border: 1px solid rgba(36, 240, 255, 0.16);
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(103, 223, 247, 0.14);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .pro-box ul {
@@ -452,6 +454,7 @@ select:focus {
 .hint {
   color: var(--muted);
   font-size: 0.9rem;
+  line-height: 1.6;
 }
 
 .posts {
@@ -463,10 +466,10 @@ select:focus {
   position: relative;
   padding: 18px;
   border-radius: 20px;
-  border: 1px solid rgba(36, 240, 255, 0.14);
+  border: 1px solid rgba(138, 173, 214, 0.14);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent),
-    rgba(10, 16, 31, 0.72);
+    rgba(12, 18, 28, 0.9);
   overflow: hidden;
 }
 
@@ -485,8 +488,8 @@ select:focus {
 }
 
 .post.pinned {
-  border-color: rgba(169, 255, 75, 0.38);
-  box-shadow: 0 0 0 1px rgba(169, 255, 75, 0.12), 0 0 30px rgba(169, 255, 75, 0.08);
+  border-color: rgba(187, 232, 106, 0.36);
+  box-shadow: 0 0 0 1px rgba(187, 232, 106, 0.1), 0 0 20px rgba(187, 232, 106, 0.06);
 }
 
 .post-header {
@@ -511,7 +514,8 @@ select:focus {
   color: #06111a;
   font-size: 0.76rem;
   font-weight: 900;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
+  background: linear-gradient(135deg, rgba(103, 223, 247, 0.9), rgba(187, 232, 106, 0.86));
 }
 
 .identity {
@@ -543,7 +547,7 @@ select:focus {
   height: 36px;
   display: inline-grid;
   place-items: center;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.07);
   padding: 0;
 }
 
@@ -563,12 +567,13 @@ select:focus {
 
 .post-title {
   margin: 0 0 10px;
-  font-size: 1.08rem;
+  font-size: 1.14rem;
+  line-height: 1.4;
 }
 
 .post-message {
   margin: 0;
-  line-height: 1.8;
+  line-height: 1.85;
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -590,7 +595,7 @@ select:focus {
 .reply-panel {
   margin-top: 14px;
   padding-top: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(138, 173, 214, 0.12);
   display: grid;
   gap: 12px;
 }
@@ -612,8 +617,8 @@ select:focus {
 .reply-item {
   padding: 12px 14px;
   border-radius: 16px;
-  border: 1px solid rgba(36, 240, 255, 0.12);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(138, 173, 214, 0.12);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .reply-meta {
@@ -627,7 +632,7 @@ select:focus {
 
 .reply-body {
   margin: 0;
-  line-height: 1.7;
+  line-height: 1.8;
   white-space: pre-wrap;
 }
 
@@ -695,7 +700,7 @@ select:focus {
   }
 
   .promo-grid {
-    gap: 12px;
+    display: none;
   }
 
   .promo {
