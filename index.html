@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>かんたん掲示板</title>
+    <meta
+      name="description"
+      content="ブラウザだけで使える、シンプルな掲示板です。"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero card">
+        <p class="eyebrow">Simple Board</p>
+        <h1>かんたん掲示板</h1>
+        <p class="lead">
+          名前とひとことを書いて投稿すると、同じブラウザで見られるシンプルな掲示板です。
+        </p>
+        <div class="hero-meta">
+          <span>保存先: このブラウザの localStorage</span>
+          <span>外部サーバー不要</span>
+        </div>
+      </section>
+
+      <section class="composer card" aria-labelledby="composer-title">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Post</p>
+            <h2 id="composer-title">書き込む</h2>
+          </div>
+          <button id="clear-all" class="ghost-button" type="button">
+            全消去
+          </button>
+        </div>
+
+        <form id="post-form" class="form">
+          <label>
+            <span>名前</span>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              maxlength="30"
+              placeholder="たろう"
+              autocomplete="nickname"
+            />
+          </label>
+
+          <label>
+            <span>メッセージ</span>
+            <textarea
+              id="message"
+              name="message"
+              rows="4"
+              maxlength="240"
+              placeholder="ここにひとこと。"
+              required
+            ></textarea>
+          </label>
+
+          <div class="form-actions">
+            <p id="status" class="status" aria-live="polite"></p>
+            <button type="submit" class="primary-button">投稿する</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="board card" aria-labelledby="board-title">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Messages</p>
+            <h2 id="board-title">みんなの投稿</h2>
+          </div>
+          <p id="count" class="count">0 件</p>
+        </div>
+
+        <div id="posts" class="posts" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <template id="post-template">
+      <article class="post">
+        <div class="post-top">
+          <h3 class="post-name"></h3>
+          <time class="post-time"></time>
+        </div>
+        <p class="post-message"></p>
+      </article>
+    </template>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
