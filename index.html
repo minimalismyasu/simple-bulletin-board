@@ -1,274 +1,162 @@
 <!doctype html>
-<html lang="ja">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>サーキット掲示板</title>
+    <title>RSS Home</title>
     <meta
       name="description"
-      content="イベント運営やコミュニティ運営向けの、収益化にもつながるサイバーパンク掲示板です。"
+      content="Paste a link and the app will try to discover RSS or Atom automatically, then add it to your home feed."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div class="backdrop"></div>
-    <main class="app-shell">
-      <header class="hero card">
-        <div>
-          <p class="eyebrow">コミュニティ運営基盤 / 収益化対応</p>
-          <h1>サーキット掲示板</h1>
+    <div class="noise"></div>
+    <main class="app">
+      <section class="hero card">
+        <div class="hero-copy">
+          <p class="eyebrow">Link to RSS Home</p>
+          <h1>Paste a link, auto-convert it to RSS, and add it to home</h1>
           <p class="lead">
-            イベントや小規模コミュニティに向けた、見やすく運営しやすい掲示板です。
-            投稿、返信、いいね、固定に対応し、プロ機能への導線も置いてあります。
+            Drop in a site URL and the app will try to discover an RSS or Atom feed automatically.
+            Once added, the latest items from all your sources appear here as a unified home feed.
           </p>
-          <div class="hero-badges">
-            <span>無料公開板</span>
-            <span>プロ導線つき</span>
-            <span>下書き保存</span>
-            <span>高速検索</span>
-          </div>
-        </div>
-
-        <div class="hero-panel">
-          <div class="stat">
-            <span class="stat-label">投稿数</span>
-            <strong id="post-count">0</strong>
-          </div>
-          <div class="stat">
-            <span class="stat-label">固定中</span>
-            <strong id="pinned-count">0</strong>
-          </div>
-          <div class="stat">
-            <span class="stat-label">最終更新</span>
-            <strong id="latest-updated">-</strong>
-          </div>
-        </div>
-      </header>
-
-      <section class="promo-grid">
-        <article class="card promo promo-free">
-          <p class="eyebrow">無料版</p>
-          <h2>集客用の公開掲示板</h2>
-          <p>
-            検索、固定、並び替え、返信を無料で使えるようにして、まずは参加者を集めます。
-          </p>
-        </article>
-
-        <article class="card promo promo-pro">
-          <p class="eyebrow">プロ版</p>
-          <h2>運営者向けの収益化層</h2>
-          <p>
-            ブランディング、モデレーション、分析、バックアップ、通知を有料機能として見せます。
-          </p>
-        </article>
-
-        <article class="card promo promo-audience">
-          <p class="eyebrow">向いている用途</p>
-          <h2>イベントと小さなコミュニティ</h2>
-          <p>
-            交流会、ファングループ、サークル、店舗コミュニティ、期間限定イベントに向いています。
-          </p>
-        </article>
-      </section>
-
-      <section class="workspace">
-        <aside class="card composer">
-          <div class="section-head">
-            <div>
-              <p class="eyebrow">投稿</p>
-              <h2>新規スレッド</h2>
-            </div>
-            <button id="theme-toggle" class="ghost-button" type="button">テーマ</button>
-          </div>
-
-          <form id="post-form" class="form">
-            <label>
-              <span>件名</span>
+          <form id="add-form" class="add-form">
+            <label class="url-field">
+              <span>URL</span>
               <input
-                id="title"
-                name="title"
-                type="text"
-                maxlength="60"
-                placeholder="例: 8/12 イベント参加確認"
+                id="source-url"
+                name="source-url"
+                type="url"
+                placeholder="https://example.com"
+                autocomplete="url"
                 required
               />
             </label>
-
-            <label>
-              <span>名前</span>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                maxlength="30"
-                placeholder="たろう"
-                autocomplete="nickname"
-              />
-            </label>
-
-            <label>
-              <span>ハンドル</span>
-              <input
-                id="handle"
-                name="handle"
-                type="text"
-                maxlength="20"
-                placeholder="@event"
-                autocomplete="username"
-              />
-            </label>
-
-            <label>
-              <span>カテゴリ</span>
-              <select id="category" name="category">
-                <option value="general">一般</option>
-                <option value="event">イベント</option>
-                <option value="support">サポート</option>
-                <option value="idea">アイデア</option>
-                <option value="alert">注意</option>
-              </select>
-            </label>
-
-            <label>
-              <span>本文</span>
-              <textarea
-                id="message"
-                name="message"
-                rows="7"
-                maxlength="400"
-                placeholder="質問、告知、更新内容を書いて投稿してください。"
-                required
-              ></textarea>
-            </label>
-
-            <div class="composer-actions">
-              <p id="status" class="status" aria-live="polite"></p>
-              <div class="button-row">
-                <button type="button" id="clear-form" class="ghost-button">クリア</button>
-                <button type="submit" class="primary-button" id="submit-button">投稿</button>
-              </div>
+            <div class="actions">
+              <button type="submit" class="primary-button">Add RSS</button>
+              <button type="button" id="refresh-all" class="ghost-button">Refresh now</button>
             </div>
           </form>
-
-          <div class="utility-grid">
-            <button id="export-json" class="utility-button" type="button">バックアップ保存</button>
-            <label class="utility-file">
-              <input id="import-json" type="file" accept="application/json" />
-              <span>バックアップ読込</span>
-            </label>
-            <button id="seed-reset" class="utility-button danger" type="button">初期化</button>
-            <button id="pro-cta" class="utility-button accent" type="button">プロ開始</button>
+          <p id="status" class="status" aria-live="polite"></p>
+          <div class="hero-stats">
+            <div class="stat">
+              <span>Subscriptions</span>
+              <strong id="subscription-count">0</strong>
+            </div>
+            <div class="stat">
+              <span>Loaded items</span>
+              <strong id="item-count">0</strong>
+            </div>
+            <div class="stat">
+              <span>Last update</span>
+              <strong id="last-updated">-</strong>
+            </div>
           </div>
+        </div>
 
-          <div class="pro-box">
-            <p class="eyebrow">プロ機能</p>
+        <aside class="hero-panel">
+          <div class="panel-card">
+            <p class="panel-title">How it works</p>
+            <ol>
+              <li>Paste a site URL</li>
+              <li>Auto-discover RSS or Atom</li>
+              <li>Show the latest items on home</li>
+            </ol>
+          </div>
+          <div class="panel-card alt">
+            <p class="panel-title">Supported</p>
             <ul>
-              <li>ロゴや配色のカスタム</li>
-              <li>カテゴリ追加とモデレーション</li>
-              <li>メールやチャット通知</li>
-              <li>検索分析とバックアップ履歴</li>
+              <li>Direct RSS feed URLs</li>
+              <li>Auto-discovery from HTML pages</li>
+              <li>Multiple sources in one home</li>
+              <li>Local storage</li>
             </ul>
           </div>
+        </aside>
+      </section>
+
+      <section class="layout">
+        <aside class="card sidebar">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Sources</p>
+              <h2>Subscribed feeds</h2>
+            </div>
+            <button id="clear-all" class="danger-button" type="button">Clear all</button>
+          </div>
+          <div id="subscriptions" class="subscription-list" aria-live="polite"></div>
         </aside>
 
         <section class="card feed">
           <div class="section-head feed-head">
             <div>
-              <p class="eyebrow">一覧</p>
-              <h2>タイムライン</h2>
+              <p class="eyebrow">Home</p>
+              <h2>Latest items</h2>
             </div>
-
-            <div class="feed-controls">
-              <label class="inline-field">
-                <span>検索</span>
-                <input id="search" type="search" placeholder="名前、本文、カテゴリ" />
+            <div class="feed-tools">
+              <label class="tool-field">
+                <span>Search</span>
+                <input id="search" type="search" placeholder="title, summary, source" />
               </label>
-
-              <label class="inline-field">
-                <span>並び替え</span>
+              <label class="tool-field">
+                <span>Sort</span>
                 <select id="sort">
-                  <option value="newest">新しい順</option>
-                  <option value="oldest">古い順</option>
-                  <option value="updated">更新順</option>
-                </select>
-              </label>
-
-              <label class="inline-field">
-                <span>絞り込み</span>
-                <select id="filter-category">
-                  <option value="all">すべて</option>
-                  <option value="general">一般</option>
-                  <option value="event">イベント</option>
-                  <option value="support">サポート</option>
-                  <option value="idea">アイデア</option>
-                  <option value="alert">注意</option>
+                  <option value="newest">Newest</option>
+                  <option value="oldest">Oldest</option>
                 </select>
               </label>
             </div>
           </div>
 
           <div class="toolbar">
-            <span id="result-count" class="chip">0件</span>
-            <span class="hint">各スレッドで固定、いいね、編集、削除、返信ができます。</span>
+            <span id="result-count" class="chip">0 items</span>
+            <span class="hint">Add a link and the home feed updates automatically.</span>
           </div>
 
-          <div id="posts" class="posts" aria-live="polite"></div>
+          <div id="articles" class="articles"></div>
         </section>
       </section>
     </main>
 
-    <template id="post-template">
-      <article class="post">
-        <div class="post-header">
-          <div class="post-meta">
-            <span class="badge"></span>
-            <div class="identity">
-              <strong class="post-name"></strong>
-              <span class="post-handle"></span>
+    <template id="subscription-template">
+      <article class="subscription">
+        <div class="subscription-top">
+          <div class="source-brand">
+            <img class="favicon" alt="" />
+            <div>
+              <h3 class="source-title"></h3>
+              <p class="source-url"></p>
             </div>
           </div>
-          <div class="post-controls">
-            <button type="button" class="icon-button pin-btn" aria-label="固定">固定</button>
-            <button type="button" class="icon-button like-btn" aria-label="いいね">
-              いいね <span class="like-count">0</span>
-            </button>
-            <button type="button" class="icon-button edit-btn" aria-label="編集">編集</button>
-            <button type="button" class="icon-button delete-btn" aria-label="削除">削除</button>
+          <button type="button" class="ghost-button small remove-source">Remove</button>
+        </div>
+        <div class="source-meta">
+          <span class="source-count"></span>
+          <span class="source-updated"></span>
+        </div>
+      </article>
+    </template>
+
+    <template id="article-template">
+      <article class="entry">
+        <div class="entry-head">
+          <div class="entry-source">
+            <img class="entry-favicon" alt="" />
+            <span class="entry-feed"></span>
           </div>
+          <time class="entry-time"></time>
         </div>
-
-        <h3 class="post-title"></h3>
-        <p class="post-message"></p>
-
-        <div class="post-footer">
-          <time class="post-time"></time>
-          <span class="post-updated"></span>
-        </div>
-
-        <button type="button" class="ghost-button reply-toggle">返信</button>
-
-        <div class="reply-panel hidden">
-          <div class="reply-list"></div>
-          <form class="reply-form">
-            <input
-              type="text"
-              name="reply-name"
-              class="reply-name"
-              placeholder="返信者名"
-              maxlength="30"
-            />
-            <textarea
-              name="reply-message"
-              class="reply-message"
-              rows="3"
-              maxlength="240"
-              placeholder="返信内容を入力"
-              required
-            ></textarea>
-            <button type="submit" class="primary-button">返信する</button>
-          </form>
-          <span class="reply-count chip"></span>
-        </div>
+        <a class="entry-link" target="_blank" rel="noreferrer">
+          <h3 class="entry-title"></h3>
+        </a>
+        <p class="entry-summary"></p>
       </article>
     </template>
 

@@ -1,21 +1,21 @@
-# サーキット掲示板
+# Link to RSS Home
 
-イベント運営やコミュニティ運営向けの、サイバーパンク調の掲示板です。
+Paste a website URL and this app will try to discover an RSS or Atom feed automatically, add it to your home view, and keep the latest articles on the page.
 
-## できること
+## Features
 
-- 投稿、返信、いいね、固定
-- 検索、並び替え、カテゴリ絞り込み
-- 下書き保存
-- バックアップの保存と読み込み
-- 無料公開板とプロ機能の導線表示
+- Automatic RSS/Atom discovery from a normal site URL
+- Local storage for subscriptions and fetched items
+- Home view with latest articles from all sources
+- Search and sort controls
+- One-click refresh
 
-## ファイル
+## Files
 
 - `index.html`
 - `styles.css`
 - `app.js`
 
-## 用途
+## Publish
 
-小規模イベント、ファンコミュニティ、サークル、店舗コミュニティなどに向いています。
+This is a static site and can be hosted on GitHub Pages.

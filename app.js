@@ -1,685 +1,580 @@
-const STORAGE_KEY = "circuit-board-posts-v1";
-const SETTINGS_KEY = "circuit-board-settings-v1";
-const DRAFT_KEY = "circuit-board-draft-v1";
-
-const CATEGORY_META = {
-  general: { label: "一般", color: "#24f0ff" },
-  event: { label: "イベント", color: "#ffba4d" },
-  support: { label: "サポート", color: "#a9ff4b" },
-  idea: { label: "アイデア", color: "#ff4ad8" },
-  alert: { label: "注意", color: "#ff5e84" },
-};
-
-const seedPosts = [
-  {
-    id: crypto.randomUUID(),
-    title: "掲示板へようこそ",
-    name: "運営",
-        handle: "@運営",
-    category: "general",
-    message:
-      "この掲示板は、見やすい公開スペースと収益化の導線を両立させるために作っています。",
-    createdAt: Date.now() - 1000 * 60 * 68,
-    updatedAt: Date.now() - 1000 * 60 * 68,
-    pinned: true,
-    likes: 12,
-    replies: [
-      {
-        id: crypto.randomUUID(),
-        name: "モデレーター",
-        handle: "@運営",
-        message: "初めての人向けに固定しています。",
-        createdAt: Date.now() - 1000 * 60 * 54,
-      },
-    ],
-  },
-  {
-    id: crypto.randomUUID(),
-    title: "イベント受付",
-    name: "案内",
-        handle: "@案内",
-    category: "event",
-    message: "出欠確認、会場案内、当日の更新はこのスレッドでお願いします。",
-    createdAt: Date.now() - 1000 * 60 * 34,
-    updatedAt: Date.now() - 1000 * 60 * 34,
-    pinned: false,
-    likes: 8,
-    replies: [
-      {
-        id: crypto.randomUUID(),
-        name: "参加者",
-        handle: "@参加者",
-        message: "これで予定が見やすくなりました。",
-        createdAt: Date.now() - 1000 * 60 * 19,
-      },
-    ],
-  },
-  {
-    id: crypto.randomUUID(),
-    title: "機能案",
-    name: "参加者",
-        handle: "@アイデア",
-    category: "idea",
-    message: "プロ版でロゴ変更、モデレーション、バックアップ履歴があると便利です。",
-    createdAt: Date.now() - 1000 * 60 * 11,
-    updatedAt: Date.now() - 1000 * 60 * 11,
-    pinned: false,
-    likes: 5,
-    replies: [],
-  },
+const STORAGE_KEY = "link-rss-home-v1";
+const MAX_ITEMS = 80;
+const FEED_PATHS = ["/feed", "/rss", "/rss.xml", "/atom.xml", "/index.xml"];
+const PROXY_BUILDERS = [
+  (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  (url) => `https://r.jina.ai/http://${stripProtocol(url)}`,
 ];
 
-const elements = {
-  form: document.getElementById("post-form"),
-  title: document.getElementById("title"),
-  name: document.getElementById("name"),
-  handle: document.getElementById("handle"),
-  category: document.getElementById("category"),
-  message: document.getElementById("message"),
-  status: document.getElementById("status"),
-  clearForm: document.getElementById("clear-form"),
-  submitButton: document.getElementById("submit-button"),
-  themeToggle: document.getElementById("theme-toggle"),
-  exportJson: document.getElementById("export-json"),
-  importJson: document.getElementById("import-json"),
-  seedReset: document.getElementById("seed-reset"),
-  proCta: document.getElementById("pro-cta"),
-  search: document.getElementById("search"),
-  sort: document.getElementById("sort"),
-  filterCategory: document.getElementById("filter-category"),
-  posts: document.getElementById("posts"),
-  template: document.getElementById("post-template"),
-  postCount: document.getElementById("post-count"),
-  pinnedCount: document.getElementById("pinned-count"),
-  latestUpdated: document.getElementById("latest-updated"),
-  resultCount: document.getElementById("result-count"),
+const state = {
+  subscriptions: [],
+  items: [],
+  search: "",
+  sort: "newest",
 };
 
-const openReplies = new Set();
-const replyDrafts = new Map();
+const elements = {
+  form: document.getElementById("add-form"),
+  input: document.getElementById("source-url"),
+  refreshAll: document.getElementById("refresh-all"),
+  clearAll: document.getElementById("clear-all"),
+  status: document.getElementById("status"),
+  subscriptions: document.getElementById("subscriptions"),
+  articles: document.getElementById("articles"),
+  search: document.getElementById("search"),
+  sort: document.getElementById("sort"),
+  subscriptionCount: document.getElementById("subscription-count"),
+  itemCount: document.getElementById("item-count"),
+  lastUpdated: document.getElementById("last-updated"),
+  resultCount: document.getElementById("result-count"),
+  subscriptionTemplate: document.getElementById("subscription-template"),
+  articleTemplate: document.getElementById("article-template"),
+  submitButton: document.querySelector("#add-form button[type='submit']"),
+};
 
-let posts = loadPosts();
-let settings = loadSettings();
-let editingId = null;
+let refreshHandle = null;
 
-applyTheme(settings.theme || "night");
-elements.sort.value = settings.sort || "newest";
-elements.filterCategory.value = settings.filterCategory || "all";
-elements.search.value = settings.search || "";
-loadDraft();
-render();
+bootstrap();
 
-elements.form.addEventListener("submit", (event) => {
+elements.form.addEventListener("submit", async (event) => {
   event.preventDefault();
+  await addSource(elements.input.value);
+});
 
-  const payload = collectDraft();
-  if (!payload.title || !payload.message) {
-    setStatus("件名と本文の両方を入力してください。");
-    return;
-  }
+elements.refreshAll.addEventListener("click", async () => {
+  await refreshAllFeeds(true);
+});
 
-  if (editingId) {
-    posts = posts.map((post) =>
-      post.id === editingId
-        ? {
-            ...post,
-            ...payload,
-            updatedAt: Date.now(),
-          }
-        : post,
-    );
-    editingId = null;
-    elements.submitButton.textContent = "投稿";
-    setStatus("投稿を更新しました。");
-  } else {
-    posts.unshift({
-      id: crypto.randomUUID(),
-      ...payload,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-      pinned: false,
-      likes: 0,
-      replies: [],
-    });
-    setStatus("投稿しました。");
-  }
-
-  savePosts();
-  clearDraft();
+elements.clearAll.addEventListener("click", () => {
+  if (!window.confirm("Delete all RSS sources?")) return;
+  state.subscriptions = [];
+  state.items = [];
+  saveState();
   render();
-  elements.title.focus();
-});
-
-elements.form.addEventListener("input", saveDraft);
-elements.form.addEventListener("change", saveDraft);
-
-elements.clearForm.addEventListener("click", () => {
-  editingId = null;
-  elements.submitButton.textContent = "投稿";
-  clearDraft({ resetCategory: true });
-  setStatus("下書きを消去しました。");
-});
-
-elements.themeToggle.addEventListener("click", () => {
-  const nextTheme = document.documentElement.dataset.theme === "day" ? "night" : "day";
-  applyTheme(nextTheme);
-  settings.theme = nextTheme;
-  saveSettings();
-    setStatus(`テーマを${nextTheme === "day" ? "昼" : "夜"}に切り替えました。`);
-});
-
-elements.exportJson.addEventListener("click", () => {
-  const blob = new Blob([JSON.stringify(posts, null, 2)], {
-    type: "application/json;charset=utf-8",
-  });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `circuit-board-backup-${formatStamp(Date.now())}.json`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-  setStatus("バックアップを保存しました。");
-});
-
-elements.importJson.addEventListener("change", async () => {
-  const file = elements.importJson.files?.[0];
-  if (!file) return;
-
-  try {
-    const text = await file.text();
-    const parsed = JSON.parse(text);
-    const nextPosts = normalizeImportedPosts(parsed);
-    if (!nextPosts.length) {
-      throw new Error("使える投稿データが見つかりませんでした。");
-    }
-    posts = nextPosts;
-    savePosts();
-    render();
-    setStatus("バックアップを読み込みました。");
-  } catch (error) {
-    setStatus(error instanceof Error ? error.message : "読み込みに失敗しました。");
-  } finally {
-    elements.importJson.value = "";
-  }
-});
-
-elements.seedReset.addEventListener("click", () => {
-  const confirmed = window.confirm("初期サンプルに戻します。よろしいですか？");
-  if (!confirmed) return;
-
-  posts = seedPosts.map((post) => ({
-    ...post,
-    id: crypto.randomUUID(),
-    replies: (post.replies || []).map((reply) => ({ ...reply, id: crypto.randomUUID() })),
-  }));
-  editingId = null;
-  openReplies.clear();
-  replyDrafts.clear();
-  elements.submitButton.textContent = "投稿";
-  savePosts();
-  clearDraft({ resetCategory: true });
-  render();
-  setStatus("初期化しました。");
-});
-
-elements.proCta.addEventListener("click", () => {
-  window.alert(
-    "プロ版の訴求:\n\n・ロゴや配色の変更\n・カテゴリ追加\n・モデレーションキュー\n・バックアップ履歴\n・分析機能",
-  );
+  setStatus("All sources removed.");
 });
 
 elements.search.addEventListener("input", () => {
-  settings.search = elements.search.value;
-  saveSettings();
+  state.search = elements.search.value.trim();
+  saveState();
   render();
 });
 
 elements.sort.addEventListener("change", () => {
-  settings.sort = elements.sort.value;
-  saveSettings();
+  state.sort = elements.sort.value === "oldest" ? "oldest" : "newest";
+  saveState();
   render();
 });
 
-elements.filterCategory.addEventListener("change", () => {
-  settings.filterCategory = elements.filterCategory.value;
-  saveSettings();
-  render();
-});
-
-elements.posts.addEventListener("click", (event) => {
-  const button = event.target.closest("button");
+elements.subscriptions.addEventListener("click", (event) => {
+  const button = event.target.closest(".remove-source");
   if (!button) return;
 
-  const article = button.closest("[data-post-id]");
-  if (!article) return;
+  const card = button.closest("[data-subscription-id]");
+  if (!card) return;
 
-  const postId = article.dataset.postId;
-
-  if (button.classList.contains("pin-btn")) {
-    posts = posts.map((post) =>
-      post.id === postId ? { ...post, pinned: !post.pinned, updatedAt: Date.now() } : post,
-    );
-    savePosts();
-    render();
-    setStatus("固定状態を切り替えました。");
-    return;
-  }
-
-  if (button.classList.contains("like-btn")) {
-    posts = posts.map((post) =>
-      post.id === postId
-        ? { ...post, likes: (post.likes || 0) + 1, updatedAt: Date.now() }
-        : post,
-    );
-    savePosts();
-    render();
-    return;
-  }
-
-  if (button.classList.contains("edit-btn")) {
-    const post = posts.find((item) => item.id === postId);
-    if (!post) return;
-    editingId = post.id;
-    elements.title.value = post.title || "";
-    elements.name.value = post.name || "";
-    elements.handle.value = post.handle || "";
-    elements.category.value = post.category || "general";
-    elements.message.value = post.message || "";
-    elements.submitButton.textContent = "更新";
-    setStatus("編集中です。");
-    elements.form.scrollIntoView({ behavior: "smooth", block: "start" });
-    elements.title.focus();
-    return;
-  }
-
-  if (button.classList.contains("delete-btn")) {
-    const confirmed = window.confirm("この投稿を削除しますか？");
-    if (!confirmed) return;
-    posts = posts.filter((post) => post.id !== postId);
-    if (editingId === postId) {
-      editingId = null;
-      elements.submitButton.textContent = "投稿";
-      clearDraft({ resetCategory: false });
-    }
-    openReplies.delete(postId);
-    replyDrafts.delete(postId);
-    savePosts();
-    render();
-    setStatus("投稿を削除しました。");
-    return;
-  }
-
-  if (button.classList.contains("reply-toggle")) {
-    const panel = article.querySelector(".reply-panel");
-    const isOpen = !panel.classList.contains("hidden");
-    panel.classList.toggle("hidden");
-    if (isOpen) {
-      openReplies.delete(postId);
-      button.textContent = "返信";
-    } else {
-      openReplies.add(postId);
-      button.textContent = "返信を閉じる";
-    }
-  }
-});
-
-elements.posts.addEventListener("submit", (event) => {
-  const form = event.target.closest(".reply-form");
-  if (!form) return;
-
-  event.preventDefault();
-  const postId = form.dataset.postId;
-  const nameInput = form.querySelector("[name='reply-name']");
-  const messageInput = form.querySelector("[name='reply-message']");
-  const name = (nameInput?.value || "").trim() || "ゲスト";
-  const message = (messageInput?.value || "").trim();
-  if (!message) return;
-
-  posts = posts.map((post) => {
-    if (post.id !== postId) return post;
-    const replies = Array.isArray(post.replies) ? post.replies : [];
-    return {
-      ...post,
-      replies: [
-        ...replies,
-        {
-          id: crypto.randomUUID(),
-          name,
-          handle: "",
-          message,
-          createdAt: Date.now(),
-        },
-      ],
-      updatedAt: Date.now(),
-    };
-  });
-
-  savePosts();
-  replyDrafts.delete(postId);
+  const subscriptionId = card.dataset.subscriptionId;
+  state.subscriptions = state.subscriptions.filter((item) => item.id !== subscriptionId);
+  state.items = state.items.filter((item) => item.subscriptionId !== subscriptionId);
+  saveState();
   render();
-  setStatus("返信を投稿しました。");
+  setStatus("Source removed.");
 });
 
-elements.posts.addEventListener("input", (event) => {
-  const form = event.target.closest(".reply-form");
-  if (!form) return;
-
-  const postId = form.dataset.postId;
-  const nameInput = form.querySelector("[name='reply-name']");
-  const messageInput = form.querySelector("[name='reply-message']");
-
-  replyDrafts.set(postId, {
-    name: nameInput?.value || "",
-    message: messageInput?.value || "",
-  });
-});
-
-elements.posts.addEventListener("change", (event) => {
-  const form = event.target.closest(".reply-form");
-  if (!form) return;
-
-  const postId = form.dataset.postId;
-  const nameInput = form.querySelector("[name='reply-name']");
-  const messageInput = form.querySelector("[name='reply-message']");
-
-  replyDrafts.set(postId, {
-    name: nameInput?.value || "",
-    message: messageInput?.value || "",
-  });
-});
-
-function loadPosts() {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return seedPosts;
-
-  try {
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return seedPosts;
-    return parsed.map(normalizeImportedPost).filter(Boolean);
-  } catch {
-    return seedPosts;
+async function bootstrap() {
+  loadState();
+  render();
+  if (state.subscriptions.length) {
+    await refreshAllFeeds(false);
   }
+
+  refreshHandle = window.setInterval(() => {
+    refreshAllFeeds(false);
+  }, 15 * 60 * 1000);
 }
 
-function loadSettings() {
+async function addSource(rawInput) {
+  const inputUrl = normalizeUrl(rawInput);
+  if (!inputUrl) {
+    setStatus("Please enter a valid URL.");
+    return;
+  }
+
+  const exists = state.subscriptions.some(
+    (item) => item.sourceUrl === inputUrl || item.feedUrl === inputUrl,
+  );
+  if (exists) {
+    setStatus("That source is already added.");
+    elements.input.value = "";
+    return;
+  }
+
+  setStatus("Finding RSS...");
+  elements.submitButton.disabled = true;
+
   try {
-    const raw = localStorage.getItem(SETTINGS_KEY);
-    if (!raw) {
-      return { theme: "night", sort: "newest", filterCategory: "all", search: "" };
-    }
-    const parsed = JSON.parse(raw);
-    return {
-      theme: parsed.theme === "day" ? "day" : "night",
-      sort: ["newest", "oldest", "updated"].includes(parsed.sort) ? parsed.sort : "newest",
-      filterCategory: Object.keys(CATEGORY_META).includes(parsed.filterCategory)
-        ? parsed.filterCategory
-        : "all",
-      search: typeof parsed.search === "string" ? parsed.search : "",
+    const discovered = await discoverFeed(inputUrl);
+    const subscription = {
+      id: crypto.randomUUID(),
+      sourceUrl: inputUrl,
+      feedUrl: discovered.feedUrl,
+      title: discovered.title,
+      siteUrl: discovered.siteUrl || inputUrl,
+      favicon: discovered.favicon || buildFavicon(inputUrl),
+      addedAt: Date.now(),
+      updatedAt: 0,
     };
-  } catch {
-    return { theme: "night", sort: "newest", filterCategory: "all", search: "" };
+
+    state.subscriptions.unshift(subscription);
+    saveState();
+    elements.input.value = "";
+    render();
+    setStatus(`Added: ${subscription.title}`);
+    await refreshSubscription(subscription, true);
+  } catch (error) {
+    setStatus(error instanceof Error ? error.message : "Failed to add RSS source.");
+  } finally {
+    elements.submitButton.disabled = false;
   }
 }
 
-function loadDraft() {
+async function refreshAllFeeds(showStatus) {
+  if (!state.subscriptions.length) {
+    if (showStatus) setStatus("No sources yet.");
+    render();
+    return;
+  }
+
+  if (showStatus) setStatus("Refreshing...");
+
+  for (const subscription of state.subscriptions) {
+    await refreshSubscription(subscription, false);
+  }
+
+  saveState();
+  render();
+
+  if (showStatus) setStatus("Updated.");
+}
+
+async function refreshSubscription(subscription, allowRender) {
   try {
-    const raw = localStorage.getItem(DRAFT_KEY);
+    const feedText = await fetchText(subscription.feedUrl);
+    const parsed = parseFeed(feedText, { siteUrl: subscription.siteUrl });
+
+    subscription.title = parsed.title || subscription.title;
+    subscription.siteUrl = parsed.siteUrl || subscription.siteUrl;
+    subscription.favicon = parsed.favicon || subscription.favicon;
+    subscription.updatedAt = Date.now();
+
+    const nextItems = parsed.items.map((item) => ({
+      ...item,
+      subscriptionId: subscription.id,
+      sourceTitle: subscription.title,
+      sourceUrl: subscription.siteUrl || subscription.sourceUrl,
+      favicon: subscription.favicon,
+    }));
+
+    const preserved = state.items.filter((item) => item.subscriptionId !== subscription.id);
+    state.items = dedupeItems([...nextItems, ...preserved]).slice(0, MAX_ITEMS);
+
+    saveState();
+    if (allowRender) render();
+    return true;
+  } catch (error) {
+    console.warn("Feed refresh failed", subscription, error);
+    if (!subscription.updatedAt) subscription.updatedAt = Date.now();
+    return false;
+  }
+}
+
+async function discoverFeed(siteUrl) {
+  const candidates = makeCandidates(siteUrl);
+
+  for (const candidate of candidates) {
+    try {
+      const text = await fetchText(candidate);
+      if (looksLikeFeed(text)) {
+        const parsed = parseFeed(text, { siteUrl });
+        return {
+          feedUrl: candidate,
+          title: parsed.title || inferTitleFromUrl(siteUrl),
+          siteUrl: parsed.siteUrl || siteUrl,
+          favicon: parsed.favicon || buildFavicon(siteUrl),
+        };
+      }
+    } catch {
+      // continue
+    }
+  }
+
+  const html = await fetchText(siteUrl);
+  const feedLink = findFeedLink(html, siteUrl);
+  if (feedLink) {
+    const feedText = await fetchText(feedLink);
+    if (!looksLikeFeed(feedText)) {
+      throw new Error("A feed candidate was found, but it was not a readable RSS feed.");
+    }
+
+    const parsed = parseFeed(feedText, { siteUrl });
+    return {
+      feedUrl: feedLink,
+      title: parsed.title || inferTitleFromUrl(siteUrl),
+      siteUrl: parsed.siteUrl || siteUrl,
+      favicon: parsed.favicon || buildFavicon(siteUrl),
+    };
+  }
+
+  throw new Error("Could not find RSS/Atom. Try the feed URL directly.");
+}
+
+function makeCandidates(siteUrl) {
+  const url = new URL(siteUrl);
+  const candidates = new Set([url.href]);
+
+  if (looksLikeFeedUrl(url.href)) {
+    candidates.add(url.href);
+  }
+
+  for (const path of FEED_PATHS) {
+    candidates.add(new URL(path, url).href);
+  }
+
+  return [...candidates];
+}
+
+function findFeedLink(html, baseUrl) {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const links = [...doc.querySelectorAll("link[rel]")];
+
+  for (const link of links) {
+    const rel = (link.getAttribute("rel") || "").toLowerCase();
+    const type = (link.getAttribute("type") || "").toLowerCase();
+    if (!rel.includes("alternate")) continue;
+    if (!type.includes("rss") && !type.includes("atom") && !type.includes("xml")) continue;
+
+    const href = link.getAttribute("href");
+    if (!href) continue;
+    return new URL(href, baseUrl).href;
+  }
+
+  const anchors = [...doc.querySelectorAll('a[href*="rss"], a[href*="feed"], a[href*="atom"]')];
+  const href = anchors[0]?.getAttribute("href");
+  return href ? new URL(href, baseUrl).href : "";
+}
+
+function parseFeed(xmlText, fallback = {}) {
+  const doc = new DOMParser().parseFromString(xmlText, "application/xml");
+  if (doc.querySelector("parsererror")) {
+    throw new Error("RSS/XML parse failed.");
+  }
+
+  const rootName = doc.documentElement?.nodeName?.toLowerCase?.() || "";
+  if (rootName === "rss") {
+    return parseRss(doc, fallback);
+  }
+
+  if (rootName === "feed") {
+    return parseAtom(doc, fallback);
+  }
+
+  throw new Error("This document is not RSS/Atom.");
+}
+
+function parseRss(doc, fallback) {
+  const channel = doc.querySelector("channel");
+  const title = textContent(channel, "title") || fallbackTitle(fallback);
+  const siteUrl = textContent(channel, "link") || fallback.siteUrl || "";
+  const favicon = buildFavicon(siteUrl || fallback.siteUrl || "");
+  const items = [...doc.querySelectorAll("item")].slice(0, 20).map((item) => {
+    const contentEncoded = item.getElementsByTagNameNS("*", "encoded")[0]?.textContent || "";
+    return {
+      id: hashString(
+        textContent(item, "guid") || textContent(item, "link") || textContent(item, "title") || "",
+      ),
+      title: sanitize(textContent(item, "title") || "Untitled"),
+      link: textContent(item, "link") || siteUrl || fallback.siteUrl || "",
+      summary: sanitize(textContent(item, "description") || contentEncoded || ""),
+      publishedAt: parseDate(textContent(item, "pubDate") || ""),
+    };
+  });
+
+  return { title, siteUrl, favicon, items };
+}
+
+function parseAtom(doc, fallback) {
+  const title = textContent(doc, "feed > title") || fallbackTitle(fallback);
+  const linkNode = [...doc.querySelectorAll("feed > link")].find(
+    (node) => !node.getAttribute("rel") || node.getAttribute("rel") === "alternate",
+  );
+  const siteUrl = linkNode?.getAttribute("href") || fallback.siteUrl || "";
+  const favicon = buildFavicon(siteUrl || fallback.siteUrl || "");
+  const items = [...doc.querySelectorAll("entry")].slice(0, 20).map((entry) => {
+    const linkNode = [...entry.querySelectorAll("link")].find(
+      (node) => !node.getAttribute("rel") || node.getAttribute("rel") === "alternate",
+    );
+    const link = linkNode?.getAttribute("href") || "";
+
+    return {
+      id: hashString(textContent(entry, "id") || link || textContent(entry, "title") || ""),
+      title: sanitize(textContent(entry, "title") || "Untitled"),
+      link,
+      summary: sanitize(textContent(entry, "summary") || textContent(entry, "content") || ""),
+      publishedAt: parseDate(textContent(entry, "updated") || textContent(entry, "published") || ""),
+    };
+  });
+
+  return { title, siteUrl, favicon, items };
+}
+
+async function fetchText(url) {
+  const target = normalizeUrl(url);
+  if (!target) throw new Error("Invalid URL.");
+
+  const candidates = [target, ...PROXY_BUILDERS.map((builder) => builder(target))];
+  let lastError = null;
+
+  for (const candidate of candidates) {
+    try {
+      const response = await fetch(candidate, {
+        headers: {
+          Accept: "application/rss+xml, application/xml, text/xml, text/html;q=0.9, */*;q=0.8",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      return await response.text();
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw lastError || new Error("Fetch failed.");
+}
+
+function looksLikeFeed(text) {
+  const sample = text.trim().slice(0, 2000).toLowerCase();
+  return sample.includes("<rss") || sample.includes("<feed") || sample.includes("<item>");
+}
+
+function looksLikeFeedUrl(url) {
+  return /(?:rss|atom|feed|xml)(?:[/?#]|$)/i.test(url);
+}
+
+function normalizeUrl(value) {
+  const trimmed = String(value || "").trim();
+  if (!trimmed) return "";
+
+  try {
+    const url = new URL(trimmed);
+    return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+  } catch {
+    try {
+      return new URL(`https://${trimmed}`).href;
+    } catch {
+      return "";
+    }
+  }
+}
+
+function stripProtocol(value) {
+  return value.replace(/^https?:\/\//i, "");
+}
+
+function parseDate(value) {
+  const time = Date.parse(value);
+  return Number.isFinite(time) ? time : 0;
+}
+
+function textContent(root, selector) {
+  return root?.querySelector(selector)?.textContent?.trim() || "";
+}
+
+function fallbackTitle(fallback) {
+  return inferTitleFromUrl(fallback.siteUrl || "");
+}
+
+function inferTitleFromUrl(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "RSS";
+  }
+}
+
+function buildFavicon(url) {
+  try {
+    const hostname = new URL(url).hostname;
+    return `https://www.google.com/s2/favicons?sz=64&domain=${hostname}`;
+  } catch {
+    return "";
+  }
+}
+
+function sanitize(text) {
+  return String(text).replace(/\s+/g, " ").trim();
+}
+
+function hashString(value) {
+  let hash = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash << 5) - hash + value.charCodeAt(index);
+    hash |= 0;
+  }
+  return `h${Math.abs(hash)}`;
+}
+
+function dedupeItems(items) {
+  const seen = new Set();
+  const result = [];
+
+  for (const item of items) {
+    const key = item.id || `${item.link}|${item.title}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push(item);
+  }
+
+  return result.sort((a, b) => (b.publishedAt || 0) - (a.publishedAt || 0));
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return;
-    const draft = JSON.parse(raw);
-    elements.title.value = draft.title || "";
-    elements.name.value = draft.name || "";
-    elements.handle.value = draft.handle || "";
-    elements.category.value = draft.category || "general";
-    elements.message.value = draft.message || "";
+
+    const parsed = JSON.parse(raw);
+    state.subscriptions = Array.isArray(parsed.subscriptions) ? parsed.subscriptions : [];
+    state.items = Array.isArray(parsed.items) ? parsed.items : [];
+    state.search = typeof parsed.search === "string" ? parsed.search : "";
+    state.sort = parsed.sort === "oldest" ? "oldest" : "newest";
+    elements.search.value = state.search;
+    elements.sort.value = state.sort;
   } catch {
-    clearDraft({ resetCategory: false });
+    state.subscriptions = [];
+    state.items = [];
+    state.search = "";
+    state.sort = "newest";
   }
 }
 
-function saveDraft() {
-  try {
-    localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraft()));
-  } catch {
-    setStatus("下書きを保存できませんでした。ストレージが制限されている可能性があります。");
-  }
-}
-
-function clearDraft({ resetCategory = false } = {}) {
-  elements.title.value = "";
-  elements.name.value = "";
-  elements.handle.value = "";
-  elements.message.value = "";
-  if (resetCategory) {
-    elements.category.value = "general";
-  }
-  localStorage.removeItem(DRAFT_KEY);
-}
-
-function collectDraft() {
-  const title = elements.title.value.trim().slice(0, 60);
-  const name = elements.name.value.trim().slice(0, 30) || "ゲスト";
-  const handle = normalizeHandle(elements.handle.value);
-  const category = Object.keys(CATEGORY_META).includes(elements.category.value)
-    ? elements.category.value
-    : "general";
-  const message = elements.message.value.trim().slice(0, 400);
-  return { title, name, handle, category, message };
-}
-
-function normalizeHandle(value) {
-  const text = value.trim().replace(/\s+/g, "");
-  if (!text) return "";
-  return text.startsWith("@") ? text.slice(0, 21) : `@${text.slice(0, 20)}`;
-}
-
-function normalizeImportedPosts(input) {
-  if (!Array.isArray(input)) return [];
-  return input
-    .map(normalizeImportedPost)
-    .filter(Boolean)
-    .map((post) => ({
-      ...post,
-      title: post.title || "件名なし",
-      name: post.name || "ゲスト",
-      handle: post.handle || "",
-      category: Object.keys(CATEGORY_META).includes(post.category) ? post.category : "general",
-      message: String(post.message || "").trim(),
-      createdAt: Number(post.createdAt) || Date.now(),
-      updatedAt: Number(post.updatedAt) || Number(post.createdAt) || Date.now(),
-      pinned: Boolean(post.pinned),
-      likes: Number(post.likes) || 0,
-      replies: Array.isArray(post.replies)
-        ? post.replies.map((reply) => ({
-            id: typeof reply.id === "string" ? reply.id : crypto.randomUUID(),
-            name: typeof reply.name === "string" ? reply.name : "ゲスト",
-            handle: typeof reply.handle === "string" ? reply.handle : "",
-            message: String(reply.message || "").trim(),
-            createdAt: Number(reply.createdAt) || Date.now(),
-          }))
-        : [],
-    }))
-    .filter((post) => post.message.length > 0);
-}
-
-function normalizeImportedPost(post) {
-  if (!post || typeof post !== "object") return null;
-
-  const createdAt = Number(post.createdAt ?? post.time ?? Date.now());
-  const updatedAt = Number(post.updatedAt ?? createdAt);
-  const category = typeof post.category === "string" ? post.category : "general";
-
-  return {
-    id: typeof post.id === "string" ? post.id : crypto.randomUUID(),
-    title: typeof post.title === "string" ? post.title : "件名なし",
-    name: typeof post.name === "string" ? post.name : "ゲスト",
-    handle: typeof post.handle === "string" ? post.handle : "",
-    category: Object.keys(CATEGORY_META).includes(category) ? category : "general",
-    message: String(post.message ?? post.content ?? "").trim(),
-    createdAt,
-    updatedAt,
-    pinned: Boolean(post.pinned),
-    likes: Number(post.likes) || 0,
-    replies: Array.isArray(post.replies)
-      ? post.replies.map((reply) => ({
-          id: typeof reply.id === "string" ? reply.id : crypto.randomUUID(),
-          name: typeof reply.name === "string" ? reply.name : "ゲスト",
-          handle: typeof reply.handle === "string" ? reply.handle : "",
-          message: String(reply.message || "").trim(),
-          createdAt: Number(reply.createdAt) || Date.now(),
-        }))
-      : [],
-  };
-}
-
-function savePosts() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
-  } catch {
-    setStatus("投稿を保存できませんでした。ストレージが制限されている可能性があります。");
-  }
-}
-
-function saveSettings() {
-  try {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-  } catch {
-    setStatus("設定を保存できませんでした。ストレージが制限されている可能性があります。");
-  }
-}
-
-function applyTheme(theme) {
-  document.documentElement.dataset.theme = theme === "day" ? "day" : "night";
-  settings.theme = theme === "day" ? "day" : "night";
+function saveState() {
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify({
+      subscriptions: state.subscriptions,
+      items: state.items,
+      search: state.search,
+      sort: state.sort,
+    }),
+  );
 }
 
 function render() {
-  const query = settings.search.trim().toLowerCase();
-  const sortMode = settings.sort || "newest";
-  const filterCategory = settings.filterCategory || "all";
+  renderSubscriptions();
+  renderFeed();
+  renderStats();
+}
 
-  const visiblePosts = posts
-    .filter((post) => {
-      const haystack = [
-        post.title,
-        post.name,
-        post.handle,
-        post.category,
-        post.message,
-        ...(Array.isArray(post.replies) ? post.replies.map((reply) => reply.message) : []),
-      ]
-        .join(" ")
-        .toLowerCase();
-      const matchesSearch = !query || haystack.includes(query);
-      const matchesCategory = filterCategory === "all" || post.category === filterCategory;
-      return matchesSearch && matchesCategory;
-    })
-    .sort((a, b) => {
-      if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
-      if (sortMode === "oldest") return a.createdAt - b.createdAt;
-      if (sortMode === "updated") return b.updatedAt - a.updatedAt;
-      return b.createdAt - a.createdAt;
-    });
+function renderSubscriptions() {
+  elements.subscriptions.innerHTML = "";
 
-  elements.posts.innerHTML = "";
-  elements.postCount.textContent = String(posts.length);
-  elements.pinnedCount.textContent = String(posts.filter((post) => post.pinned).length);
-  elements.resultCount.textContent = `${visiblePosts.length}件`;
-  elements.latestUpdated.textContent = formatStamp(
-    posts.length ? Math.max(...posts.map((post) => post.updatedAt || post.createdAt)) : null,
-  );
-
-  if (!visiblePosts.length) {
+  if (!state.subscriptions.length) {
     const empty = document.createElement("p");
     empty.className = "empty-state";
-    empty.textContent = posts.length
-      ? "検索条件に一致する投稿がありません。"
-      : "まだ投稿がありません。左のフォームから最初のスレッドを作成してください。";
-    elements.posts.appendChild(empty);
+    empty.textContent = "No RSS sources yet. Paste a URL above.";
+    elements.subscriptions.appendChild(empty);
     return;
   }
 
-  for (const post of visiblePosts) {
-    const fragment = elements.template.content.cloneNode(true);
-    const article = fragment.querySelector(".post");
-    const badge = fragment.querySelector(".badge");
-    const name = fragment.querySelector(".post-name");
-    const handle = fragment.querySelector(".post-handle");
-    const title = fragment.querySelector(".post-title");
-    const message = fragment.querySelector(".post-message");
-    const time = fragment.querySelector(".post-time");
-    const updated = fragment.querySelector(".post-updated");
-    const pinBtn = fragment.querySelector(".pin-btn");
-    const likeBtn = fragment.querySelector(".like-btn");
-    const likeCount = fragment.querySelector(".like-count");
-    const replyToggle = fragment.querySelector(".reply-toggle");
-    const replyPanel = fragment.querySelector(".reply-panel");
-    const replyList = fragment.querySelector(".reply-list");
-    const replyCount = fragment.querySelector(".reply-count");
-    const replyName = fragment.querySelector(".reply-name");
-    const replyMessage = fragment.querySelector(".reply-message");
-    const replyForm = fragment.querySelector(".reply-form");
+  for (const subscription of state.subscriptions) {
+    const fragment = elements.subscriptionTemplate.content.cloneNode(true);
+    const card = fragment.querySelector(".subscription");
+    const favicon = fragment.querySelector(".favicon");
+    const title = fragment.querySelector(".source-title");
+    const url = fragment.querySelector(".source-url");
+    const count = fragment.querySelector(".source-count");
+    const updated = fragment.querySelector(".source-updated");
 
-    article.dataset.postId = post.id;
-    article.classList.toggle("pinned", Boolean(post.pinned));
+    card.dataset.subscriptionId = subscription.id;
+    favicon.src = subscription.favicon || buildFavicon(subscription.siteUrl || subscription.sourceUrl);
+    favicon.alt = `${subscription.title} favicon`;
+    title.textContent = subscription.title || inferTitleFromUrl(subscription.siteUrl || subscription.sourceUrl);
+    url.textContent = subscription.siteUrl || subscription.sourceUrl;
+    count.textContent = `${state.items.filter((item) => item.subscriptionId === subscription.id).length} items`;
+    updated.textContent = subscription.updatedAt ? `Updated ${formatTime(subscription.updatedAt)}` : "Not updated yet";
 
-    const meta = CATEGORY_META[post.category] || CATEGORY_META.general;
-    badge.textContent = meta.label;
-    badge.style.background = meta.color;
-
-    name.textContent = post.name || "ゲスト";
-    handle.textContent = post.handle || "@匿名";
-    title.textContent = post.title || "件名なし";
-    message.textContent = post.message;
-    time.textContent = `投稿 ${formatStamp(post.createdAt)}`;
-    updated.textContent =
-      post.updatedAt && post.updatedAt !== post.createdAt
-        ? `更新 ${formatStamp(post.updatedAt)}`
-        : "更新なし";
-
-    pinBtn.textContent = post.pinned ? "固定中" : "固定";
-    pinBtn.setAttribute("aria-label", post.pinned ? "固定解除" : "固定");
-
-    likeCount.textContent = String(post.likes || 0);
-    likeBtn.title = "いいね";
-    replyCount.textContent = `${(post.replies || []).length}件の返信`;
-
-    if (post.replies && post.replies.length) {
-      replyList.innerHTML = "";
-      for (const reply of post.replies) {
-        const item = document.createElement("article");
-        item.className = "reply-item";
-        item.innerHTML = `
-          <div class="reply-meta">
-            <strong>${escapeHtml(reply.name || "ゲスト")}</strong>
-            <span>${formatStamp(reply.createdAt)}</span>
-          </div>
-          <p class="reply-body">${escapeHtml(reply.message)}</p>
-        `;
-        replyList.appendChild(item);
-      }
-    } else {
-      replyList.innerHTML = '<p class="empty-state">まだ返信はありません。</p>';
-    }
-
-    const isOpen = openReplies.has(post.id);
-    replyPanel.classList.toggle("hidden", !isOpen);
-    replyToggle.textContent = isOpen ? "返信を閉じる" : "返信";
-    replyForm.dataset.postId = post.id;
-    const draft = replyDrafts.get(post.id);
-    replyName.value = draft?.name || "";
-    replyMessage.value = draft?.message || "";
-
-    elements.posts.appendChild(fragment);
+    elements.subscriptions.appendChild(fragment);
   }
 }
 
-function setStatus(text) {
-  elements.status.textContent = text;
+function renderFeed() {
+  const query = state.search.toLowerCase();
+  const entries = state.items.filter((item) => {
+    if (!query) return true;
+    const haystack = [item.title, item.summary, item.sourceTitle, item.sourceUrl].join(" ").toLowerCase();
+    return haystack.includes(query);
+  });
+
+  entries.sort((a, b) => {
+    if (state.sort === "oldest") return (a.publishedAt || 0) - (b.publishedAt || 0);
+    return (b.publishedAt || 0) - (a.publishedAt || 0);
+  });
+
+  elements.articles.innerHTML = "";
+  elements.resultCount.textContent = `${entries.length} items`;
+
+  if (!entries.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-state";
+    empty.textContent = state.items.length
+      ? "No articles match your search."
+      : "Add an RSS source and the home feed will appear here.";
+    elements.articles.appendChild(empty);
+    return;
+  }
+
+  for (const item of entries) {
+    const fragment = elements.articleTemplate.content.cloneNode(true);
+    const card = fragment.querySelector(".entry");
+    const favicon = fragment.querySelector(".entry-favicon");
+    const feed = fragment.querySelector(".entry-feed");
+    const time = fragment.querySelector(".entry-time");
+    const link = fragment.querySelector(".entry-link");
+    const title = fragment.querySelector(".entry-title");
+    const summary = fragment.querySelector(".entry-summary");
+
+    card.dataset.entryId = item.id;
+    favicon.src = item.favicon || "";
+    favicon.alt = "";
+    feed.textContent = item.sourceTitle || item.sourceUrl || "RSS";
+    time.textContent = formatTime(item.publishedAt);
+    link.href = item.link || item.sourceUrl || "#";
+    title.textContent = item.title || "Untitled";
+    summary.textContent = item.summary || "No summary available.";
+
+    elements.articles.appendChild(fragment);
+  }
 }
 
-function formatStamp(timestamp) {
+function renderStats() {
+  elements.subscriptionCount.textContent = String(state.subscriptions.length);
+  elements.itemCount.textContent = String(state.items.length);
+  const latest = state.subscriptions
+    .map((item) => item.updatedAt || 0)
+    .filter(Boolean)
+    .sort((a, b) => b - a)[0];
+  elements.lastUpdated.textContent = latest ? formatTime(latest) : "-";
+}
+
+function setStatus(message) {
+  elements.status.textContent = message;
+}
+
+function formatTime(timestamp) {
   if (!timestamp) return "-";
   return new Intl.DateTimeFormat("ja-JP", {
     month: "2-digit",
@@ -687,13 +582,4 @@ function formatStamp(timestamp) {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(timestamp));
-}
-
-function escapeHtml(text) {
-  return String(text)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
 }
