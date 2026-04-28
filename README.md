@@ -1,15 +1,15 @@
-# Neon Board
+# Circuit Board
 
-A cyberpunk-style bulletin board that runs entirely in the browser.
+A cyberpunk-style community bulletin board built for event organizers and small communities.
 
-## Features
+## What it includes
 
-- Neon-themed UI with day/night toggle
-- Create, edit, delete, and pin posts
-- Search, category filter, and sort options
-- Local persistence with `localStorage`
-- JSON export and import for backup
-- Seed reset for a quick clean slate
+- Free public board layout
+- Monetization-oriented Pro pitch
+- Thread titles, likes, pins, and replies
+- Search, sort, and category filtering
+- Draft saving in `localStorage`
+- JSON backup and import
 
 ## Files
 
@@ -17,6 +17,6 @@ A cyberpunk-style bulletin board that runs entirely in the browser.
 - `styles.css`
 - `app.js`
 
-## Notes
+## Use case
 
-This is a static front-end app, so it can be hosted on GitHub Pages as-is.
+This version is aimed at communities that can pay for branding, moderation, analytics, or backup features.

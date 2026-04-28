@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Neon Board</title>
+    <title>Circuit Board</title>
     <meta
       name="description"
-      content="サイバーパンクテーマの、検索・固定・編集・保存ができる使いやすい掲示板。"
+      content="イベント運営・コミュニティ運営向けのサイバーパンク掲示板。無料と有料の導線を両立した実例。"
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
@@ -14,34 +14,62 @@
     <div class="backdrop"></div>
     <main class="app-shell">
       <header class="hero card">
-        <div class="hero-copy">
-          <p class="eyebrow">Neon / Bulletin</p>
-          <h1>Neon Board</h1>
+        <div>
+          <p class="eyebrow">Community OS / Monetize Ready</p>
+          <h1>Circuit Board</h1>
           <p class="lead">
-            未来都市っぽい見た目で、投稿の検索・並び替え・固定・編集・削除・保存までできる軽量掲示板です。
+            イベントや小規模コミュニティに特化した掲示板です。参加者は無料で使えて、
+            運営者は Pro 機能で収益化できます。
           </p>
           <div class="hero-badges">
-            <span>localStorage 保存</span>
-            <span>編集・固定対応</span>
-            <span>バックアップ対応</span>
+            <span>Free board</span>
+            <span>Pro upgrades</span>
+            <span>Backup export</span>
+            <span>Fast search</span>
           </div>
         </div>
 
         <div class="hero-panel">
           <div class="stat">
-            <span class="stat-label">投稿数</span>
+            <span class="stat-label">Posts</span>
             <strong id="post-count">0</strong>
           </div>
           <div class="stat">
-            <span class="stat-label">固定</span>
+            <span class="stat-label">Pinned</span>
             <strong id="pinned-count">0</strong>
           </div>
           <div class="stat">
-            <span class="stat-label">最新更新</span>
+            <span class="stat-label">Latest update</span>
             <strong id="latest-updated">-</strong>
           </div>
         </div>
       </header>
+
+      <section class="promo-grid">
+        <article class="card promo promo-free">
+          <p class="eyebrow">Free plan</p>
+          <h2>集客用の無料公開板</h2>
+          <p>
+            投稿・検索・固定・並び替えが使える無料版。まずは参加者を集める入口にします。
+          </p>
+        </article>
+
+        <article class="card promo promo-pro">
+          <p class="eyebrow">Pro plan</p>
+          <h2>運営者向けの収益化導線</h2>
+          <p>
+            広告非表示、カテゴリ追加、バックアップ、自動通知、独自ブランディングを Pro 機能として訴求します。
+          </p>
+        </article>
+
+        <article class="card promo promo-audience">
+          <p class="eyebrow">Best for</p>
+          <h2>こんな用途に合う</h2>
+          <p>
+            イベント、同人活動、サークル、店舗コミュニティ、勉強会。小さな閉じた場ほど収益化しやすいです。
+          </p>
+        </article>
+      </section>
 
       <section class="workspace">
         <aside class="card composer">
@@ -50,12 +78,22 @@
               <p class="eyebrow">Compose</p>
               <h2>新規投稿</h2>
             </div>
-            <button id="theme-toggle" class="ghost-button" type="button">
-              テーマ切替
-            </button>
+            <button id="theme-toggle" class="ghost-button" type="button">Theme</button>
           </div>
 
           <form id="post-form" class="form">
+            <label>
+              <span>件名</span>
+              <input
+                id="title"
+                name="title"
+                type="text"
+                maxlength="60"
+                placeholder="例: 8/12 イベント参加募集"
+                required
+              />
+            </label>
+
             <label>
               <span>名前</span>
               <input
@@ -63,7 +101,7 @@
                 name="name"
                 type="text"
                 maxlength="30"
-                placeholder="たとえば: みなと"
+                placeholder="Taro"
                 autocomplete="nickname"
               />
             </label>
@@ -75,7 +113,7 @@
                 name="handle"
                 type="text"
                 maxlength="20"
-                placeholder="@neo"
+                placeholder="@event"
                 autocomplete="username"
               />
             </label>
@@ -84,10 +122,10 @@
               <span>カテゴリ</span>
               <select id="category" name="category">
                 <option value="general">GENERAL</option>
-                <option value="news">NEWS</option>
-                <option value="help">HELP</option>
+                <option value="event">EVENT</option>
+                <option value="support">SUPPORT</option>
                 <option value="idea">IDEA</option>
-                <option value="bug">BUG</option>
+                <option value="alert">ALERT</option>
               </select>
             </label>
 
@@ -98,7 +136,7 @@
                 name="message"
                 rows="7"
                 maxlength="400"
-                placeholder="ここにメッセージを書いて投稿"
+                placeholder="参加連絡や質問を書いて投稿"
                 required
               ></textarea>
             </label>
@@ -106,27 +144,32 @@
             <div class="composer-actions">
               <p id="status" class="status" aria-live="polite"></p>
               <div class="button-row">
-                <button type="button" id="clear-form" class="ghost-button">
-                  クリア
-                </button>
-                <button type="submit" class="primary-button" id="submit-button">
-                  投稿する
-                </button>
+                <button type="button" id="clear-form" class="ghost-button">Clear</button>
+                <button type="submit" class="primary-button" id="submit-button">Post</button>
               </div>
             </div>
           </form>
 
-          <div class="utility-grid">
-            <button id="export-json" class="utility-button" type="button">
-              JSON 保存
-            </button>
-            <label class="utility-file">
-              <input id="import-json" type="file" accept="application/json" />
-              <span>JSON 読み込み</span>
+            <div class="utility-grid">
+              <button id="export-json" class="utility-button" type="button">Backup JSON</button>
+              <label class="utility-file">
+                <input id="import-json" type="file" accept="application/json" />
+                <span>Import JSON</span>
             </label>
-            <button id="seed-reset" class="utility-button danger" type="button">
-              初期化
+            <button id="seed-reset" class="utility-button danger" type="button">Reset</button>
+            <button id="pro-cta" class="utility-button accent" type="button">
+              Start Pro
             </button>
+          </div>
+
+          <div class="pro-box">
+            <p class="eyebrow">Pro features</p>
+            <ul>
+              <li>Custom branding and logo</li>
+              <li>Extra categories and moderation tools</li>
+              <li>Email or Discord notifications</li>
+              <li>Search analytics and backup history</li>
+            </ul>
           </div>
         </aside>
 
@@ -140,7 +183,7 @@
             <div class="feed-controls">
               <label class="inline-field">
                 <span>検索</span>
-                <input id="search" type="search" placeholder="名前・内容・カテゴリ" />
+                <input id="search" type="search" placeholder="名前・本文・カテゴリ" />
               </label>
 
               <label class="inline-field">
@@ -157,18 +200,18 @@
                 <select id="filter-category">
                   <option value="all">すべて</option>
                   <option value="general">GENERAL</option>
-                  <option value="news">NEWS</option>
-                  <option value="help">HELP</option>
+                  <option value="event">EVENT</option>
+                  <option value="support">SUPPORT</option>
                   <option value="idea">IDEA</option>
-                  <option value="bug">BUG</option>
+                  <option value="alert">ALERT</option>
                 </select>
               </label>
             </div>
           </div>
 
           <div class="toolbar">
-            <span id="result-count" class="chip">0 件</span>
-            <span class="hint">カード右上の操作で固定・編集・削除ができます</span>
+            <span id="result-count" class="chip">0 items</span>
+            <span class="hint">Pin, edit, and delete are available on each card.</span>
           </div>
 
           <div id="posts" class="posts" aria-live="polite"></div>
@@ -187,23 +230,39 @@
             </div>
           </div>
           <div class="post-controls">
-            <button type="button" class="icon-button pin-btn" aria-label="固定">
-              ☆
+            <button type="button" class="icon-button pin-btn" aria-label="Pin">PIN</button>
+            <button type="button" class="icon-button like-btn" aria-label="Like">
+              ♥ <span class="like-count">0</span>
             </button>
-            <button type="button" class="icon-button edit-btn" aria-label="編集">
-              ✎
-            </button>
-            <button type="button" class="icon-button delete-btn" aria-label="削除">
-              ×
-            </button>
+            <button type="button" class="icon-button edit-btn" aria-label="Edit">✎</button>
+            <button type="button" class="icon-button delete-btn" aria-label="Delete">×</button>
           </div>
         </div>
 
+        <h3 class="post-title"></h3>
         <p class="post-message"></p>
 
         <div class="post-footer">
           <time class="post-time"></time>
           <span class="post-updated"></span>
+        </div>
+
+        <button type="button" class="ghost-button reply-toggle">Replies</button>
+
+        <div class="reply-panel hidden">
+          <div class="reply-list"></div>
+          <form class="reply-form">
+            <input type="text" name="reply-name" placeholder="Reply name" maxlength="30" />
+            <textarea
+              name="reply-message"
+              rows="3"
+              maxlength="240"
+              placeholder="Write a reply..."
+              required
+            ></textarea>
+            <button type="submit" class="primary-button">Send reply</button>
+          </form>
+          <span class="reply-count chip"></span>
         </div>
       </article>
     </template>

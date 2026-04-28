@@ -1,40 +1,40 @@
 :root {
   color-scheme: dark;
-  --bg-0: #070912;
-  --bg-1: #0b1020;
-  --bg-2: #111a35;
-  --panel: rgba(12, 18, 38, 0.82);
-  --panel-strong: rgba(14, 22, 46, 0.94);
-  --border: rgba(120, 255, 245, 0.16);
-  --text: #e9f9ff;
-  --muted: #8aa9c1;
-  --cyan: #22f0ff;
-  --cyan-deep: #00a3ff;
-  --magenta: #ff4bd8;
-  --lime: #a7ff4d;
-  --amber: #ffb84d;
-  --danger: #ff5c7d;
-  --shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+  --bg-0: #050816;
+  --bg-1: #0a1024;
+  --bg-2: #111a34;
+  --panel: rgba(13, 19, 39, 0.84);
+  --panel-strong: rgba(15, 24, 49, 0.95);
+  --border: rgba(99, 240, 255, 0.16);
+  --text: #e9f8ff;
+  --muted: #88a1bc;
+  --cyan: #24f0ff;
+  --cyan-2: #06a0ff;
+  --magenta: #ff4ad8;
+  --lime: #a9ff4b;
+  --amber: #ffba4d;
+  --danger: #ff5e84;
+  --shadow: 0 28px 80px rgba(0, 0, 0, 0.48);
   --radius: 24px;
 }
 
 [data-theme="day"] {
   color-scheme: light;
-  --bg-0: #e9f4ff;
-  --bg-1: #d6ebff;
-  --bg-2: #f5f8ff;
-  --panel: rgba(255, 255, 255, 0.7);
-  --panel-strong: rgba(255, 255, 255, 0.88);
-  --border: rgba(48, 87, 160, 0.14);
-  --text: #0f1f33;
-  --muted: #53657d;
-  --cyan: #0b81ff;
-  --cyan-deep: #0052cf;
-  --magenta: #cb32a8;
-  --lime: #4d9f19;
-  --amber: #ad6d00;
-  --danger: #d8355e;
-  --shadow: 0 20px 60px rgba(40, 72, 120, 0.14);
+  --bg-0: #eaf4ff;
+  --bg-1: #d7eaff;
+  --bg-2: #f6f9ff;
+  --panel: rgba(255, 255, 255, 0.74);
+  --panel-strong: rgba(255, 255, 255, 0.92);
+  --border: rgba(44, 90, 156, 0.14);
+  --text: #0f2036;
+  --muted: #56677f;
+  --cyan: #0c83ff;
+  --cyan-2: #0056d6;
+  --magenta: #cb2ea5;
+  --lime: #398c1c;
+  --amber: #a86a00;
+  --danger: #cf345f;
+  --shadow: 0 24px 64px rgba(41, 72, 116, 0.16);
 }
 
 * {
@@ -48,14 +48,13 @@ body {
 }
 
 body {
-  font-family: "Segoe UI Variable", "Yu Gothic UI", "Hiragino Kaku Gothic ProN",
-    "Meiryo", sans-serif;
+  font-family: "Segoe UI Variable", "Yu Gothic UI", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
   color: var(--text);
   background:
-    radial-gradient(circle at 15% 10%, rgba(255, 75, 216, 0.18), transparent 25%),
-    radial-gradient(circle at 85% 15%, rgba(34, 240, 255, 0.18), transparent 24%),
-    radial-gradient(circle at 70% 80%, rgba(167, 255, 77, 0.08), transparent 28%),
-    linear-gradient(135deg, var(--bg-0), var(--bg-1) 45%, var(--bg-2));
+    radial-gradient(circle at 14% 12%, rgba(255, 74, 216, 0.2), transparent 26%),
+    radial-gradient(circle at 86% 14%, rgba(36, 240, 255, 0.2), transparent 24%),
+    radial-gradient(circle at 65% 82%, rgba(169, 255, 75, 0.08), transparent 28%),
+    linear-gradient(135deg, var(--bg-0), var(--bg-1) 42%, var(--bg-2));
   overflow-x: hidden;
 }
 
@@ -64,11 +63,11 @@ body {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
   background-size: 36px 36px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.65), transparent 92%);
-  opacity: 0.55;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.72), transparent 94%);
+  opacity: 0.5;
 }
 
 .backdrop::before,
@@ -77,30 +76,30 @@ body {
   position: absolute;
   border-radius: 999px;
   filter: blur(40px);
-  opacity: 0.6;
+  opacity: 0.55;
 }
 
 .backdrop::before {
-  width: 360px;
-  height: 360px;
-  left: -80px;
+  width: 340px;
+  height: 340px;
+  left: -100px;
   top: 8%;
-  background: rgba(255, 75, 216, 0.22);
+  background: rgba(255, 74, 216, 0.2);
 }
 
 .backdrop::after {
   width: 420px;
   height: 420px;
   right: -120px;
-  bottom: -100px;
-  background: rgba(34, 240, 255, 0.18);
+  bottom: -120px;
+  background: rgba(36, 240, 255, 0.16);
 }
 
 .app-shell {
   width: min(1280px, calc(100% - 24px));
   margin: 24px auto 40px;
   display: grid;
-  gap: 20px;
+  gap: 18px;
 }
 
 .card {
@@ -114,29 +113,28 @@ body {
 .hero {
   padding: 28px;
   display: grid;
-  grid-template-columns: 1.7fr 1fr;
+  grid-template-columns: 1.6fr 1fr;
   gap: 24px;
-  overflow: hidden;
   position: relative;
+  overflow: hidden;
 }
 
 .hero::after {
   content: "";
   position: absolute;
-  inset: auto -40px -60px auto;
-  width: 220px;
-  height: 220px;
-  background: radial-gradient(circle, rgba(34, 240, 255, 0.24), transparent 70%);
-  pointer-events: none;
+  inset: auto -36px -64px auto;
+  width: 240px;
+  height: 240px;
+  background: radial-gradient(circle, rgba(36, 240, 255, 0.24), transparent 72%);
 }
 
 .eyebrow {
   margin: 0 0 8px;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  font-size: 0.78rem;
   color: var(--cyan);
-  font-weight: 700;
+  font-size: 0.78rem;
+  font-weight: 800;
 }
 
 h1,
@@ -148,9 +146,9 @@ p {
 
 h1 {
   margin-bottom: 12px;
-  font-size: clamp(2.5rem, 6vw, 5rem);
-  line-height: 0.95;
-  text-shadow: 0 0 18px rgba(34, 240, 255, 0.18);
+  font-size: clamp(2.6rem, 6vw, 5rem);
+  line-height: 0.94;
+  text-shadow: 0 0 18px rgba(36, 240, 255, 0.18);
 }
 
 .lead {
@@ -167,16 +165,15 @@ h1 {
 }
 
 .hero-badges span,
-.chip {
+.chip,
+.badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 8px 12px;
   border-radius: 999px;
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
 .hero-panel {
@@ -190,13 +187,12 @@ h1 {
   border-radius: 20px;
   background: var(--panel-strong);
   border: 1px solid var(--border);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .stat-label {
   display: block;
   color: var(--muted);
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   margin-bottom: 6px;
 }
 
@@ -205,10 +201,43 @@ h1 {
   letter-spacing: 0.02em;
 }
 
+.promo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.promo {
+  padding: 22px;
+  min-height: 170px;
+}
+
+.promo h2 {
+  margin-bottom: 10px;
+  font-size: 1.18rem;
+}
+
+.promo p {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.promo-free {
+  border-color: rgba(36, 240, 255, 0.22);
+}
+
+.promo-pro {
+  border-color: rgba(255, 74, 216, 0.24);
+}
+
+.promo-audience {
+  border-color: rgba(169, 255, 75, 0.18);
+}
+
 .workspace {
   display: grid;
   grid-template-columns: 380px minmax(0, 1fr);
-  gap: 20px;
+  gap: 18px;
 }
 
 .composer,
@@ -226,7 +255,7 @@ h1 {
 
 .section-head h2 {
   margin-bottom: 0;
-  font-size: 1.25rem;
+  font-size: 1.22rem;
 }
 
 .feed-head {
@@ -246,7 +275,7 @@ label {
 
 label span {
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
 input,
@@ -262,8 +291,7 @@ select {
   transition:
     border-color 0.18s ease,
     box-shadow 0.18s ease,
-    transform 0.18s ease,
-    background 0.18s ease;
+    transform 0.18s ease;
 }
 
 [data-theme="day"] input,
@@ -281,10 +309,10 @@ input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: rgba(34, 240, 255, 0.8);
+  border-color: rgba(36, 240, 255, 0.8);
   box-shadow:
-    0 0 0 3px rgba(34, 240, 255, 0.16),
-    0 0 18px rgba(34, 240, 255, 0.1);
+    0 0 0 3px rgba(36, 240, 255, 0.16),
+    0 0 18px rgba(36, 240, 255, 0.1);
 }
 
 .composer-actions {
@@ -324,8 +352,7 @@ select:focus {
 .primary-button,
 .utility-button {
   padding: 12px 18px;
-  background: linear-gradient(135deg, rgba(34, 240, 255, 0.18), rgba(255, 75, 216, 0.16));
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  background: linear-gradient(135deg, rgba(36, 240, 255, 0.18), rgba(255, 74, 216, 0.16));
 }
 
 .ghost-button {
@@ -333,9 +360,13 @@ select:focus {
   background: rgba(255, 255, 255, 0.04);
 }
 
+.utility-button.accent {
+  background: linear-gradient(135deg, rgba(169, 255, 75, 0.18), rgba(36, 240, 255, 0.14));
+}
+
 .danger {
-  border-color: rgba(255, 92, 125, 0.32);
-  background: linear-gradient(135deg, rgba(255, 92, 125, 0.18), rgba(255, 184, 77, 0.1));
+  border-color: rgba(255, 94, 132, 0.32);
+  background: linear-gradient(135deg, rgba(255, 94, 132, 0.18), rgba(255, 186, 77, 0.1));
 }
 
 .primary-button:hover,
@@ -343,7 +374,7 @@ select:focus {
 .utility-button:hover,
 .icon-button:hover {
   transform: translateY(-1px);
-  border-color: rgba(34, 240, 255, 0.6);
+  border-color: rgba(36, 240, 255, 0.6);
 }
 
 .utility-grid {
@@ -359,7 +390,7 @@ select:focus {
   min-height: 48px;
   border-radius: 999px;
   border: 1px solid var(--border);
-  background: linear-gradient(135deg, rgba(34, 240, 255, 0.12), rgba(255, 75, 216, 0.09));
+  background: linear-gradient(135deg, rgba(36, 240, 255, 0.12), rgba(255, 74, 216, 0.09));
   cursor: pointer;
   overflow: hidden;
 }
@@ -378,6 +409,21 @@ select:focus {
   cursor: pointer;
 }
 
+.pro-box {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(36, 240, 255, 0.16);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.pro-box ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
 .feed-controls {
   display: flex;
   flex-wrap: wrap;
@@ -392,7 +438,7 @@ select:focus {
 
 .inline-field span {
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
 }
 
 .toolbar {
@@ -405,7 +451,7 @@ select:focus {
 
 .hint {
   color: var(--muted);
-  font-size: 0.92rem;
+  font-size: 0.9rem;
 }
 
 .posts {
@@ -417,9 +463,9 @@ select:focus {
   position: relative;
   padding: 18px;
   border-radius: 20px;
-  border: 1px solid rgba(34, 240, 255, 0.14);
+  border: 1px solid rgba(36, 240, 255, 0.14);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent),
     rgba(10, 16, 31, 0.72);
   overflow: hidden;
 }
@@ -436,12 +482,11 @@ select:focus {
   inset: 0 auto 0 0;
   width: 4px;
   background: linear-gradient(180deg, var(--cyan), var(--magenta));
-  opacity: 0.9;
 }
 
 .post.pinned {
-  border-color: rgba(167, 255, 77, 0.38);
-  box-shadow: 0 0 0 1px rgba(167, 255, 77, 0.12), 0 0 30px rgba(167, 255, 77, 0.08);
+  border-color: rgba(169, 255, 75, 0.38);
+  box-shadow: 0 0 0 1px rgba(169, 255, 75, 0.12), 0 0 30px rgba(169, 255, 75, 0.08);
 }
 
 .post-header {
@@ -461,15 +506,11 @@ select:focus {
 
 .badge {
   flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
+  min-width: 76px;
   justify-content: center;
-  min-width: 72px;
-  padding: 6px 10px;
-  border-radius: 999px;
   color: #06111a;
-  font-size: 0.78rem;
-  font-weight: 800;
+  font-size: 0.76rem;
+  font-weight: 900;
   letter-spacing: 0.08em;
 }
 
@@ -506,12 +547,30 @@ select:focus {
   padding: 0;
 }
 
+.like-btn {
+  width: auto;
+  min-width: 76px;
+  padding: 0 10px;
+  gap: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.like-count {
+  font-size: 0.82rem;
+}
+
+.post-title {
+  margin: 0 0 10px;
+  font-size: 1.08rem;
+}
+
 .post-message {
   margin: 0;
   line-height: 1.8;
   white-space: pre-wrap;
   word-break: break-word;
-  color: var(--text);
 }
 
 .post-footer {
@@ -521,7 +580,51 @@ select:focus {
   gap: 12px;
   margin-top: 14px;
   color: var(--muted);
-  font-size: 0.84rem;
+  font-size: 0.83rem;
+}
+
+.reply-toggle {
+  margin-top: 14px;
+}
+
+.reply-panel {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  gap: 12px;
+}
+
+.reply-form {
+  display: grid;
+  gap: 10px;
+}
+
+.reply-list {
+  display: grid;
+  gap: 10px;
+}
+
+.reply-item {
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(36, 240, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.reply-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-bottom: 8px;
+}
+
+.reply-body {
+  margin: 0;
+  line-height: 1.7;
+  white-space: pre-wrap;
 }
 
 .empty-state {
@@ -531,13 +634,10 @@ select:focus {
   color: var(--muted);
 }
 
-.hidden {
-  display: none !important;
-}
-
 @media (max-width: 1080px) {
   .hero,
-  .workspace {
+  .workspace,
+  .promo-grid {
     grid-template-columns: 1fr;
   }
 
@@ -555,7 +655,8 @@ select:focus {
 
   .composer,
   .feed,
-  .hero {
+  .hero,
+  .promo {
     padding: 18px;
   }
 
@@ -564,7 +665,10 @@ select:focus {
   }
 
   .feed-head,
-  .toolbar {
+  .toolbar,
+  .section-head,
+  .post-header,
+  .post-footer {
     align-items: flex-start;
     flex-direction: column;
   }
@@ -581,11 +685,5 @@ select:focus {
 
   .utility-grid {
     grid-template-columns: 1fr;
-  }
-
-  .post-header,
-  .post-footer {
-    align-items: flex-start;
-    flex-direction: column;
   }
 }
