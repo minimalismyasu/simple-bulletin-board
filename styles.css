@@ -595,6 +595,10 @@ select:focus {
   gap: 12px;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .reply-form {
   display: grid;
   gap: 10px;

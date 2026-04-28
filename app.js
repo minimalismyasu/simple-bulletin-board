@@ -96,6 +96,7 @@ const elements = {
 };
 
 const openReplies = new Set();
+const replyDrafts = new Map();
 
 let posts = loadPosts();
 let settings = loadSettings();
@@ -214,6 +215,8 @@ elements.seedReset.addEventListener("click", () => {
     replies: (post.replies || []).map((reply) => ({ ...reply, id: crypto.randomUUID() })),
   }));
   editingId = null;
+  openReplies.clear();
+  replyDrafts.clear();
   elements.submitButton.textContent = "Post";
   savePosts();
   clearDraft({ resetCategory: true });
@@ -301,6 +304,7 @@ elements.posts.addEventListener("click", (event) => {
       clearDraft({ resetCategory: false });
     }
     openReplies.delete(postId);
+    replyDrafts.delete(postId);
     savePosts();
     render();
     setStatus("Post deleted.");
@@ -353,8 +357,37 @@ elements.posts.addEventListener("submit", (event) => {
   });
 
   savePosts();
+  replyDrafts.delete(postId);
   render();
   setStatus("Reply posted.");
+});
+
+elements.posts.addEventListener("input", (event) => {
+  const form = event.target.closest(".reply-form");
+  if (!form) return;
+
+  const postId = form.dataset.postId;
+  const nameInput = form.querySelector("[name='reply-name']");
+  const messageInput = form.querySelector("[name='reply-message']");
+
+  replyDrafts.set(postId, {
+    name: nameInput?.value || "",
+    message: messageInput?.value || "",
+  });
+});
+
+elements.posts.addEventListener("change", (event) => {
+  const form = event.target.closest(".reply-form");
+  if (!form) return;
+
+  const postId = form.dataset.postId;
+  const nameInput = form.querySelector("[name='reply-name']");
+  const messageInput = form.querySelector("[name='reply-message']");
+
+  replyDrafts.set(postId, {
+    name: nameInput?.value || "",
+    message: messageInput?.value || "",
+  });
 });
 
 function loadPosts() {
@@ -406,7 +439,11 @@ function loadDraft() {
 }
 
 function saveDraft() {
-  localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraft()));
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraft()));
+  } catch {
+    setStatus("Draft could not be saved. Storage may be full or blocked.");
+  }
 }
 
 function clearDraft({ resetCategory = false } = {}) {
@@ -497,11 +534,19 @@ function normalizeImportedPost(post) {
 }
 
 function savePosts() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+  } catch {
+    setStatus("Posts could not be saved. Storage may be full or blocked.");
+  }
 }
 
 function saveSettings() {
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  } catch {
+    setStatus("Settings could not be saved. Storage may be full or blocked.");
+  }
 }
 
 function applyTheme(theme) {
@@ -621,9 +666,10 @@ function render() {
     const isOpen = openReplies.has(post.id);
     replyPanel.classList.toggle("hidden", !isOpen);
     replyToggle.textContent = isOpen ? "Hide replies" : "Replies";
-    replyName.value = "";
-    replyMessage.value = "";
     replyForm.dataset.postId = post.id;
+    const draft = replyDrafts.get(post.id);
+    replyName.value = draft?.name || "";
+    replyMessage.value = draft?.message || "";
 
     elements.posts.appendChild(fragment);
   }
